@@ -95,6 +95,7 @@ class Turingmachine {
         this.accepted = false;
         this.log = [];
         const tape = [];
+        const blank = '#';
         let
             state = 0,
             nextState = null,
@@ -105,7 +106,7 @@ class Turingmachine {
             tape.push(char)
         }
 
-        tape.push('#')
+        tape.push(blank)
 
         // console.log(tape)
 
@@ -116,10 +117,14 @@ class Turingmachine {
 
             const read = tape[head];
 
-            // @Todo: Ignoring initial 'blanks' (#) and 
-            // moving the head to the first letter without logging 
+            // Ignoring initial 'blanks' (#) and 
+            // moving the head to the first letter without logging
+            if (state == 0 && read == blank) {
+                head++,
+                    operations()
+            }
 
-            if (typeof states[state][read] !== "undefined") {
+            else if (typeof states[state][read] !== "undefined") {
 
                 const write = states[state][read][0];
                 const move = states[state][read][1];
@@ -165,5 +170,5 @@ class Turingmachine {
  */
 (() => {
     console.log("Test...")
-    console.log(new Turingmachine("BPBPVVEPE"))
+    console.log(new Turingmachine("###BPBPVVEPE"))
 })()
