@@ -12,7 +12,7 @@
  * Every object represents a state with different transitions.
  * Every transition consists of key (tape read) and 3 statements: write, moving direction and new state.
  * 
- * Attention: For better monitoring the hash sign (#) will be used instead of blanks (' ').
+ * Attention: For better monitoring the number sign (#) will be used instead of blanks (' ').
  */
 const states = [
     // state 0
@@ -80,7 +80,7 @@ const states = [
     },
     // state 13
     {
-        '#': ['#', 'N']
+        '#': ['#', 'N', 13]
     }
 ];
 
@@ -92,9 +92,11 @@ class Turingmachine {
     constructor(word) {
 
         this.word = word;
+        this.states = states;
         this.accepted = false;
         this.log = [];
         const tape = [];
+        const blank = '#';
         let
             state = 0,
             nextState = null,
@@ -105,7 +107,7 @@ class Turingmachine {
             tape.push(char)
         }
 
-        tape.push('#')
+        tape.push(blank)
 
         // console.log(tape)
 
@@ -116,10 +118,14 @@ class Turingmachine {
 
             const read = tape[head];
 
-            // @Todo: Ignoring initial 'blanks' (#) and 
-            // moving the head to the first letter without logging 
+            // Ignoring initial 'blanks' (#) and 
+            // moving the head to the first letter without logging
+            if (state == 0 && read == blank) {
+                head++;
+                operations();
+            }
 
-            if (typeof states[state][read] !== "undefined") {
+            else if (typeof states[state][read] !== "undefined") {
 
                 const write = states[state][read][0];
                 const move = states[state][read][1];
@@ -165,5 +171,5 @@ class Turingmachine {
  */
 (() => {
     console.log("Test...")
-    console.log(new Turingmachine("BPBPVVEPE"))
+    console.log(new Turingmachine("###BPBPVVEPE"))
 })()
