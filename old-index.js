@@ -234,32 +234,26 @@ const tapeOutput = word => {
 };
 
 
-async function init() {
-
-
-    const res = await tm(true);
-
+function init(res) {
     const log = res["log"];
-    console.log(log)
+    const ll = log.length;
+    const nextState = log[ll - 1]["nextState"];
 
-    const nextState = log[log.length - 1]["nextState"];
     const states = res["states"];
     const word = res["word"];
     let nodes = null;
 
     if (nextState != states.length - 1) {
-        const read = word[log.length];
-        log.push({ curState: nextState, head: log.length, read: read, write: '?', move: 'N', nextState: '?' });
+        const read = word[ll];
+        log.push({ curState: nextState, head: ll, read: read, write: '?', move: 'N', nextState: '?' });
         nodes = nodeData(log);
         nodes.push({ key: '?', color: "grey" });
     }
 
     const links = linkData(log);
-    const transitions = transitionList(log);
-
-
     const diagram = initDiagram(nodes, links);
-
+    const transitions = transitionList(log);
+    console.log(transitions)
     delayedOutput(diagram, states.length, transitions, 1);
 
 }
@@ -269,6 +263,36 @@ async function init() {
  * General function initialization when the document is loaded
  */
 document.addEventListener("DOMContentLoaded", function (event) {
+
     console.log("DOM fully loaded and parsed");
-    init();
+
+    document.getElementById("startButton").addEventListener("click", async () => {
+
+        //To do: build the whole thing app centric!
+
+        const response = await tm(true);
+
+        // starting output
+        init(response);
+
+
+        tapeOutput(response["word"]);
+
+        // console.log(response["log"]);
+
+        const nodes = nodeData(response["log"]);
+        // console.log(nodes);
+
+        const links = linkData(response["log"]);
+        // console.log(links);
+
+        // init diagram
+        // const diagram = initDiagram(nodes, links);
+
+        // const transitions = transitionList(response["log"]);
+
+        // output control
+        // delayedOutput(diagram, nodes, transitions, 1);
+
+    })
 })
