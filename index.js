@@ -253,10 +253,12 @@ async function init() {
      */
 
     const states = res["states"];
-    console.log(`states: ${states}`);
+    console.log("states");
+    console.log(states);
 
     const word = res["word"];
-    console.log(`word: ${word}`);
+    console.log("word:");
+    console.log(word);
 
 
     const log = res["log"];
@@ -274,13 +276,16 @@ async function init() {
     }
 
 
-    console.log(`log: ${log}`);
+    console.log("log:");
+    console.log(log);
 
     const links = linkData(log);
-    console.log(`links: ${links}`);
+    console.log("links:");
+    console.log(links);
 
     const transitions = transitionList(log);
-    console.log(`transitions: ${transitions}`)
+    console.log("transitions:")
+    console.log(transitions)
 
 
     // init tape
