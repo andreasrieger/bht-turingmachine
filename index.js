@@ -232,31 +232,38 @@ const tapeOutput = word => {
 
 async function init() {
 
-
     const res = await tm(true);
 
-    const log = res["log"];
-    console.log(log)
-
-    const nextState = log[log.length - 1]["nextState"];
     const states = res["states"];
-    const word = res["word"];
-    let nodes = null;
+    console.log(states)
 
+    const word = res["word"];
+    console.log(word)
+
+    const log = res["log"];
+    
+    let nodes = null;
+    const nextState = log[log.length - 1]["nextState"];
+    
     if (nextState != states.length - 1) {
         const read = word[log.length];
         log.push({ curState: nextState, head: log.length, read: read, write: '?', move: 'N', nextState: '?' });
         nodes = nodeData(log);
         nodes.push({ key: '?', color: "grey" });
     }
-
+    
+    console.log(log)
+    
     const links = linkData(log);
+    console.log(links)
+    
     const transitions = transitionList(log);
+    console.log(transitions)
 
-
+    // init diagram
     const diagram = initDiagram(nodes, links);
 
-    delayedOutput(diagram, states.length, transitions, 1);
+    // delayedOutput(diagram, states.length, transitions, 1);
 
 }
 
