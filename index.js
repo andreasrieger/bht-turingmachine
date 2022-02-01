@@ -110,8 +110,7 @@ const nodeData = (log) => {
             graphId = tempGraphId;
         }
     }
-    console.log(arr);
-    console.log(graphIds);
+
     return arr;
 };
 
@@ -274,6 +273,7 @@ async function init() {
         nodes.push({ key: '?', color: "grey" });
     }
 
+    else nodes = nodeData(log);
 
     console.log("log:");
     console.log(log);
