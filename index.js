@@ -253,7 +253,7 @@ async function init() {
      */
 
     const states = res["states"];
-    console.log("states");
+    console.log("states:");
     console.log(states);
 
     const word = res["word"];
@@ -278,6 +278,9 @@ async function init() {
 
     console.log("log:");
     console.log(log);
+
+    console.log("nodes:");
+    console.log(nodes);
 
     const links = linkData(log);
     console.log("links:");
