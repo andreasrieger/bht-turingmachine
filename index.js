@@ -130,104 +130,7 @@ const transitionList = (log) => {
 };
 
 
-const nextStep = (diagram, curState, nextState, head, prevHead, accState) => {
 
-
-
-    //To do: check whether last node is an accepting state -> green else -> red
-
-    //testing around
-    // console.log(diagram.findLinkForData()); // returns: null
-    // console.log(diagram.findLinksByExample()); // returns: null
-    // console.log(diagram.findNodeForKey(curState)); //returns: overwhelming info
-    // console.log(diagram.findNodeForKey(curState).findLinksConnected());
-    // console.log(diagram.findNodeForKey(curState).findNodesConnected());
-    // console.log(diagram.findNodeForKey(curState).findLinksOutOf());
-    // console.log(diagram.findNodeForKey(curState).findLinksTo());
-
-
-
-    const node = diagram.model.findNodeDataForKey(curState);
-    // const next = diagram.model.findNodeDataForKey(nextState);// last one throws error due to nextState not existing
-
-    diagram.startTransaction("coloring");
-    if (node !== null) {
-        diagram.model.setDataProperty(node, "color", "green");
-        // diagram.model.setDataProperty(link, "color", "green");
-    }
-    diagram.commitTransaction("coloring");
-
-    if ((curState < (accState - 1)) && (nextState == null)) {
-        const tapeElement = document.getElementById("th" + head);
-        tapeElement.classList.replace("bg-light", "bg-danger");
-        tapeElement.classList.replace("text-dark", "text-white");
-
-        const prevTapeElement = document.getElementById("th" + prevHead);
-        prevTapeElement.classList.replace("bg-secondary", "bg-light");
-        prevTapeElement.classList.replace("text-white", "text-dark");
-    }
-
-    if (curState < (accState - 1)) {
-        const tapeElement = document.getElementById("th" + head);
-        tapeElement.classList.replace("bg-light", "bg-secondary");
-        tapeElement.classList.replace("text-dark", "text-white");
-
-        const prevTapeElement = document.getElementById("th" + prevHead);
-        prevTapeElement.classList.replace("bg-secondary", "bg-light");
-        prevTapeElement.classList.replace("text-white", "text-dark");
-    }
-
-    else if (curState == (accState - 1)) {
-        const tapeElements = document.querySelectorAll(".tape-element");
-        for (let i = 0, l = tapeElements.length; i < l; i++) {
-            tapeElements[i].classList.replace("bg-light", "bg-success");
-            tapeElements[i].classList.replace("bg-secondary", "bg-success");
-            tapeElements[i].classList.replace("text-dark", "text-white");
-        }
-    }
-
-
-
-
-
-
-
-};
-
-
-const delayedOutput = (diagram, accState, transitions, delay) => {
-
-    for (let i = 0, l = transitions.length; i < l; i++) {
-        const delayTime = i * delay * 1000;
-        setTimeout(
-            (dg, curState, nextState, head, prevHead, aS) => {
-                nextStep(dg, curState, nextState, head, prevHead, aS);
-            },
-            delayTime,
-            diagram, //diagram object
-            transitions[i]["from"], //curState
-            (i + 1 < l) ? transitions[i + 1]["from"] : null, //nextState
-            transitions[i]["head"], //head
-            (i > 0) ? transitions[i - 1]["head"] : 0, //prevHead
-            accState //accepting state
-        );
-    }
-};
-
-const tapeOutput = word => {
-    const output = document.createElement("p");
-    for (let i = 0, l = word.length; i < l; i++) {
-        const textWrap = document.createElement("i");
-        textWrap.setAttribute("id", "th" + i);
-        if (i == 0) {
-            textWrap.setAttribute("class", "bg-secondary text-white tape-element");
-        } else textWrap.setAttribute("class", "bg-light text-dark tape-element");
-        const text = document.createTextNode(word[i]);
-        textWrap.appendChild(text);
-        output.appendChild(textWrap);
-    }
-    document.getElementById("tapeOutput").appendChild(output);
-};
 
 
 async function init() {
@@ -253,7 +156,7 @@ async function init() {
     }
     
     console.log(log)
-    
+
     const links = linkData(log);
     console.log(links)
     
