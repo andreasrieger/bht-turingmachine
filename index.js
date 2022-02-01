@@ -174,7 +174,7 @@ const nextStep = (diagram, curState, nextState, head, prevHead, accState) => {
     }
     diagram.commitTransaction("coloring");
 
-    if ((curState < (accState - 1)) && (nextState == null)) {
+/*     if ((curState < (accState - 1)) && (nextState == null)) {
         console.log("Error")
         const tapeElement = document.getElementById("th" + head);
         tapeElement.classList.replace("bg-light", "bg-danger");
@@ -183,7 +183,7 @@ const nextStep = (diagram, curState, nextState, head, prevHead, accState) => {
         const prevTapeElement = document.getElementById("th" + prevHead);
         prevTapeElement.classList.replace("bg-secondary", "bg-light");
         prevTapeElement.classList.replace("text-white", "text-dark");
-    }
+    } */
 
     if (curState < (accState - 1)) {
         const tapeElement = document.getElementById("th" + head);
@@ -212,9 +212,6 @@ const delayedOutput = (diagram, accState, transitions, delay) => {
         const delayTime = i * delay * 1000;
         setTimeout(
             (dg, curState, nextState, head, prevHead, aS) => {
-                console.log(i)
-                console.log(curState)
-                console.log(nextState)
                 nextStep(dg, curState, nextState, head, prevHead, aS);
             },
             delayTime,
@@ -277,6 +274,9 @@ async function init() {
 
     // init diagram
     const diagram = initDiagram(nodes, links);
+
+    // init tape
+    tapeOutput(word);
 
     delayedOutput(diagram, states.length, transitions, 1);
 
