@@ -18,7 +18,7 @@ const
         ['B', 'T', 'B', 'T', 'S', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E']
     ] */
     proven = [
-        ['B', 'P', 'B', 'P', 'V', 'V', 'E', 'P', 'E', 'U'], // correct word except last char
+        ['B', 'P', 'B', 'P', 'V', 'V', 'E', 'P', 'E', 'U'] // correct word except last char
     ]
     ;
 
@@ -96,23 +96,22 @@ const nodeData = (log) => {
         const tempGraphId = state["curState"];
 
         if (tempGraphId != graphId) {
-            let obj = null;
 
             if (tempGraphId == 0) { // first node is green
-                obj = { key: tempGraphId, color: "green" };
-                arr.push(obj);
+                arr.push({ key: tempGraphId, color: "green" });
                 graphIds.push(tempGraphId);
             }
 
             else if (tempGraphId > 0 && !graphIds.includes(tempGraphId)) {
-                obj = { key: tempGraphId, color: "grey" };
-                arr.push(obj);
+                arr.push({ key: tempGraphId, color: "grey" });
                 graphIds.push(tempGraphId);
             }
 
             graphId = tempGraphId;
         }
     }
+    console.log(arr);
+    console.log(graphIds);
     return arr;
 };
 
