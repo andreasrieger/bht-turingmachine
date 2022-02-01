@@ -11,13 +11,15 @@ const
 
     // Some proven reber words for testing purposes
     proven = [
-        ['B', 'P', 'B', 'P', 'V', 'V', 'E', 'P', 'E'],
-        ['B', 'T', 'B', 'T', 'S', 'S', 'X', 'X', 'T', 'V', 'V', 'E', 'T', 'E'],
-        ['B', 'T', 'B', 'T', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E'],
-        ['B', 'P', 'B', 'P', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'V', 'E', 'P', 'E'],
-        ['B', 'T', 'B', 'T', 'S', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E']
+        ['B', 'U', 'P', 'B', 'P', 'V', 'V', 'E', 'P', 'E'],
+        ['B', 'U', 'T', 'B', 'T', 'S', 'S', 'X', 'X', 'T', 'V', 'V', 'E', 'T', 'E'],
+        ['B', 'U', 'T', 'B', 'T', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E'],
+        ['B', 'U', 'P', 'B', 'P', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'V', 'E', 'P', 'E'],
+        ['B', 'U', 'T', 'B', 'T', 'S', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E']
     ]
     ;
+
+// let blank = null;
 
 /**
 * This method returns a random number between min and max.
@@ -71,15 +73,6 @@ const tm = async (proof) => {
 };
 
 
-
-/*
-The following lines need to be re-factored
-*/
-
-
-
-
-
 const nodeData = (states) => {
     const arr = [];
     const graphIds = [];
@@ -101,6 +94,7 @@ const nodeData = (states) => {
     return arr;
 };
 
+
 const linkData = (states) => {
     const arr = [];
 
@@ -110,10 +104,8 @@ const linkData = (states) => {
             arr.push({ from: i, to: key[1][2], key: (i + key[1][2]), label: label });
         }
     }
-    // console.log(arr);
     return arr;
 };
-
 
 
 const transitionList = (log) => {
@@ -225,60 +217,17 @@ async function init() {
 
     // starting the machine with a random word 
     const res = await tm(true);
-
-    /**
-     * getting the log data
-     */
-
-    const states = res["states"];
-    // console.log("states:");
-    // console.log(states);
-
-    const word = res["word"];
-    // console.log("word:");
-    // console.log(word);
-
-
-    const log = res["log"];
-
-    let nodes = null;
-    const nextState = log[log.length - 1]["nextState"];
-
-
-    // adding log entry to add a final node to the diagram that is representing the unknown state 
-    if (nextState != states.length - 1) {
-        const read = word[log.length];
-        log.push({ curState: nextState, head: log.length, read: read, write: '?', move: 'N', nextState: '?' });
-        nodes = nodeData(log);
-        nodes.push({ key: '?', color: "grey" });
-    }
-
-    else nodes = nodeData(log);
-
-    // console.log("log:");
-    // console.log(log);
-
-    // console.log("nodes:");
-    // console.log(nodes);
-
-    const links = linkData(log);
-    // console.log("links:");
-    // console.log(links);
-
-    const transitions = transitionList(log);
-    // console.log("transitions:")
-    // console.log(transitions)
-
+    // blank = res["blank"];
+    const transitions = transitionList(res["log"]);
 
     // init tape
-    tapeOutput(word);
+    tapeOutput(res["word"]);
 
     // init diagram
-    // const diagram = initDiagram(nodes, links);
-    const diagram = initDiagram(nodeData(states), linkData(states));
+    const diagram = initDiagram(nodeData(res["states"]), linkData(res["states"]));
 
     // starting animation
-    delayedOutput(diagram, states.length, transitions, 1);
+    delayedOutput(diagram, res["states"].length, transitions, 1);
 
 }
 

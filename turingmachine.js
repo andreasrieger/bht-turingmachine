@@ -12,13 +12,15 @@
  * Every object represents a state with different transitions.
  * Every transition consists of key (tape read) and 3 statements: write, moving direction and new state.
  * 
- * Attention: For better monitoring the number sign (#) will be used instead of blanks (' ').
  */
+
+const blank = '#'; // using the number sign (#) instead of blanks (' ') for testing purpose
+
 const states = [
     // state 0
     {
-        '#': ['#', 'R', 0],
-        'B': ['#', 'R', 1]
+        [blank]: [blank, 'R', 0],
+        'B': [blank, 'R', 1]
     },
     // state 1
     {
@@ -27,60 +29,60 @@ const states = [
     },
     // state 2
     {
-        'B': ['#', 'R', 3]
+        'B': [blank, 'R', 3]
     },
     // state 3
     {
-        'T': ['#', 'R', 4],
-        'P': ['#', 'R', 6]
+        'T': [blank, 'R', 4],
+        'P': [blank, 'R', 6]
     },
     // state 4
     {
-        'S': ['#', 'R', 4],
-        'X': ['#', 'R', 5]
+        'S': [blank, 'R', 4],
+        'X': [blank, 'R', 5]
     },
     // state 5
     {
-        'X': ['#', 'R', 6],
-        'S': ['#', 'R', 8]
+        'X': [blank, 'R', 6],
+        'S': [blank, 'R', 8]
     },
     // state 6
     {
-        'T': ['#', 'R', 6],
-        'V': ['#', 'R', 7]
+        'T': [blank, 'R', 6],
+        'V': [blank, 'R', 7]
     },
     // state 7
     {
-        'P': ['#', 'R', 5],
-        'V': ['#', 'R', 8]
+        'P': [blank, 'R', 5],
+        'V': [blank, 'R', 8]
     },
     // state 8
     {
-        'E': ['#', 'R', 9]
+        'E': [blank, 'R', 9]
     },
     // state 9
     {
-        'T': ['#', 'L', 10],
-        'P': ['#', 'L', 11]
+        'T': [blank, 'L', 10],
+        'P': [blank, 'L', 11]
     },
     // state 10
     {
-        '#': ['#', 'L', 10],
-        'T': ['#', 'R', 12]
+        [blank]: [blank, 'L', 10],
+        'T': [blank, 'R', 12]
     },
     // state 11
     {
-        '#': ['#', 'L', 11],
-        'P': ['#', 'R', 12]
+        [blank]: [blank, 'L', 11],
+        'P': [blank, 'R', 12]
     },
     // state 12
     {
-        '#': ['#', 'R', 12],
-        'E': ['#', 'R', 13]
+        [blank]: [blank, 'R', 12],
+        'E': [blank, 'R', 13]
     },
     // state 13
     {
-        '#': ['#', 'N', 13]
+        [blank]: [blank, 'N', 13]
     }
 ];
 
@@ -91,25 +93,24 @@ const states = [
 class Turingmachine {
     constructor(word) {
 
-        this.word = word;
+        this.word = word.trim();
         this.states = states;
         this.accepted = false;
+        this.blank = blank;
         this.log = [];
+
         const tape = [];
-        const blank = '#';
         let
             state = 0,
             nextState = null,
             head = 0
             ;
 
+        // splitting word and pushing chars to tape
         for (const char of word) {
             tape.push(char);
         }
-
-        tape.push(blank)
-
-        // console.log(tape)
+        tape.push(blank);
 
         /**
          * Recursive method to control the machine's flow
@@ -120,7 +121,6 @@ class Turingmachine {
 
             // Ignoring initial 'blanks' (#) and 
             // moving the head to the first letter without logging
-            // using .trim() if ' '
             if (state == 0 && read == blank) {
                 head++;
                 operations();
@@ -131,8 +131,6 @@ class Turingmachine {
                 const write = states[state][read][0];
                 const move = states[state][read][1];
                 nextState = states[state][read][2];
-
-                // console.log(`current state: ${state} -> read: ${read}, write: ${write}, move: ${move}, next state: ${nextState} `)
 
                 this.log.push({
                     curState: state,
@@ -156,9 +154,10 @@ class Turingmachine {
                     head--;
                     operations();
                 }
-                
-                else if (move == 'N') {
+
+                else if (move == 'N' && !this.accepted) {
                     this.accepted = true;
+                    operations();
                 }
             }
         }
