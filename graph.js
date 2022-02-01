@@ -1,4 +1,4 @@
-function init(graphs, links) {
+function initDiagram(graphs, links) {
 
     const myDiagram =
         new go.Diagram("myDiagramDiv",  // create a Diagram for a HTML Div element

@@ -1,6 +1,6 @@
 /**
  * Turing machine simulation
- * 
+ *
  * @Author: Andreas Rieger, s82456@bht-berlin.de
  * Date: 2022-01-23
  */
@@ -24,10 +24,10 @@ const
 
 /**
 * This method returns a random number between min and max.
-* 
+*
 * @param {*} min
-* @param {*} max 
-* @returns 
+* @param {*} max
+* @returns
 */
 const randomInt = async (min, max) => {
     return (
@@ -38,11 +38,11 @@ const randomInt = async (min, max) => {
 
 
 /**
- * This method returns a random selection of a 
+ * This method returns a random selection of a
  * random number of words (chars) from sigma.
- * 
- * @param {*} abc 
- * @returns 
+ *
+ * @param {*} abc
+ * @returns
  */
 const randomSequence = async () => {
     // To do: set min and max
@@ -60,8 +60,8 @@ const randomSequence = async () => {
 /**
  * Method to create a new Turingmachine class object from whether
  * a list of proven words or a randomly created word based on sigma.
- * 
- * @param {*} proof 
+ *
+ * @param {*} proof
  * @returns an object with the word, the machine's decision and a log
  */
 const tm = async (proof) => {
@@ -84,21 +84,17 @@ const nodeData = (log) => {
         const tempGraphId = state["curState"];
 
         if (tempGraphId != graphId) {
-            // console.log(`prev: ${graphId} -> cur/next: ${tempGraphId}`);
             let obj = null;
             if (tempGraphId == 0) {
-                obj = { key: tempGraphId, color: "green", prev: graphId };
-                console.log(obj);
+                obj = { key: tempGraphId, color: "green" };
                 arr.push(obj);
                 graphIds.push(tempGraphId);
             } else if (tempGraphId > 0 && !graphIds.includes(tempGraphId)) {
-                // console.log(tempGraphId);
-                obj = { key: tempGraphId, color: "grey", prev: graphId };
-                console.log(obj);
+                obj = { key: tempGraphId, color: "grey" };
                 arr.push(obj);
                 graphIds.push(tempGraphId);
-                // } else obj = { key: tempGraphId, color: "grey", temp: state["read"], prev: graphId };
             }
+
             // To do: check if nextState (log entry) is available, if not create node "?"
             // else if ()
 
@@ -134,7 +130,9 @@ const transitionList = (log) => {
 };
 
 
-const nextStep = (diagram, curState, nextState, head, prevHead, delay) => {
+const nextStep = (diagram, curState, nextState, head, prevHead, accState) => {
+
+
 
     //To do: check whether last node is an accepting state -> green else -> red
 
@@ -159,7 +157,18 @@ const nextStep = (diagram, curState, nextState, head, prevHead, delay) => {
     }
     diagram.commitTransaction("coloring");
 
-    if (curState < 13) {
+    if ((curState < (accState - 1)) && (nextState == null)) {
+        console.log("Error")
+        const tapeElement = document.getElementById("th" + head);
+        tapeElement.classList.replace("bg-light", "bg-danger");
+        tapeElement.classList.replace("text-dark", "text-white");
+
+        const prevTapeElement = document.getElementById("th" + prevHead);
+        prevTapeElement.classList.replace("bg-secondary", "bg-light");
+        prevTapeElement.classList.replace("text-white", "text-dark");
+    }
+
+    if (curState < (accState - 1)) {
         const tapeElement = document.getElementById("th" + head);
         tapeElement.classList.replace("bg-light", "bg-secondary");
         tapeElement.classList.replace("text-dark", "text-white");
@@ -169,7 +178,7 @@ const nextStep = (diagram, curState, nextState, head, prevHead, delay) => {
         prevTapeElement.classList.replace("text-white", "text-dark");
     }
 
-    else if (curState == 13) {
+    else if (curState == (accState - 1)) {
         const tapeElements = document.querySelectorAll(".tape-element");
         for (let i = 0, l = tapeElements.length; i < l; i++) {
             tapeElements[i].classList.replace("bg-light", "bg-success");
@@ -179,25 +188,32 @@ const nextStep = (diagram, curState, nextState, head, prevHead, delay) => {
     }
 
 
+
+
+
+
+
 };
 
 
-const delayedOutput = (diagram, states, transitions, delay) => {
+const delayedOutput = (diagram, accState, transitions, delay) => {
 
-    for (let i = 1, l = transitions.length; i < l; i++) {
-        const delayTime = i * delay * 100;
+    for (let i = 0, l = transitions.length; i < l; i++) {
+        const delayTime = i * delay * 1000;
         setTimeout(
-            (dg, t1, t2, h1, h2, dt) => {
-                nextStep(dg, t1, t2, h1, h2, dt)
+            (dg, curState, nextState, head, prevHead, aS) => {
+                console.log(i)
+                console.log(curState)
+                console.log(nextState)
+                nextStep(dg, curState, nextState, head, prevHead, aS);
             },
             delayTime,
-            diagram,
-            transitions[i]["from"],
-            (i + 1 < l) ? transitions[i + 1]["from"] : null,
-            // (i + 1 < l) ? states[i + 1]["key"] : null,
-            transitions[i]["head"],
-            transitions[i - 1]["head"],
-            delayTime
+            diagram, //diagram object
+            transitions[i]["from"], //curState
+            (i + 1 < l) ? transitions[i + 1]["from"] : null, //nextState
+            transitions[i]["head"], //head
+            (i > 0) ? transitions[i - 1]["head"] : 0, //prevHead
+            accState //accepting state
         );
     }
 };
@@ -217,6 +233,32 @@ const tapeOutput = word => {
     document.getElementById("tapeOutput").appendChild(output);
 };
 
+
+function init(res) {
+    const log = res["log"];
+    const ll = log.length;
+    const nextState = log[ll - 1]["nextState"];
+
+    const states = res["states"];
+    const word = res["word"];
+    let nodes = null;
+
+    if (nextState != states.length - 1) {
+        const read = word[ll];
+        log.push({ curState: nextState, head: ll, read: read, write: '?', move: 'N', nextState: '?' });
+        nodes = nodeData(log);
+        nodes.push({ key: '?', color: "grey" });
+    }
+
+    const links = linkData(log);
+    const diagram = initDiagram(nodes, links);
+    const transitions = transitionList(log);
+    console.log(transitions)
+    delayedOutput(diagram, states.length, transitions, 1);
+
+}
+
+
 /**
  * General function initialization when the document is loaded
  */
@@ -229,22 +271,28 @@ document.addEventListener("DOMContentLoaded", function (event) {
         //To do: build the whole thing app centric!
 
         const response = await tm(true);
+
+        // starting output
+        init(response);
+
+
         tapeOutput(response["word"]);
 
-        console.log(response["log"]);
+        // console.log(response["log"]);
 
         const nodes = nodeData(response["log"]);
-        console.log(nodes);
+        // console.log(nodes);
 
         const links = linkData(response["log"]);
         // console.log(links);
 
         // init diagram
-        const diagram = init(nodes, links);//BUg: sometimes delivers more nodes
+        // const diagram = initDiagram(nodes, links);
 
-        const transitions = transitionList(response["log"]);
+        // const transitions = transitionList(response["log"]);
+
         // output control
-        delayedOutput(diagram, nodes, transitions, 1);
+        // delayedOutput(diagram, nodes, transitions, 1);
 
     })
 })

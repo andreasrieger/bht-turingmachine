@@ -104,7 +104,7 @@ class Turingmachine {
             ;
 
         for (const char of word) {
-            tape.push(char)
+            tape.push(char);
         }
 
         tape.push(blank)
@@ -120,14 +120,10 @@ class Turingmachine {
 
             // Ignoring initial 'blanks' (#) and 
             // moving the head to the first letter without logging
+            // using .trim() if ' '
             if (state == 0 && read == blank) {
-<<<<<<< HEAD
                 head++;
                 operations();
-=======
-                head++,
-                    operations()
->>>>>>> d88718d186856b0c8ada0d88e43d86fc951e33c9
             }
 
             else if (typeof states[state][read] !== "undefined") {
@@ -151,23 +147,23 @@ class Turingmachine {
                     tape[head] = write;
                     state = nextState;
                     head++;
-                    operations()
+                    operations();
                 }
 
                 else if (move == 'L' && !this.accepted) {
                     state = nextState;
                     tape[head] = write;
                     head--;
-                    operations()
+                    operations();
                 }
-
+                
                 else if (move == 'N') {
-                    this.accepted = true
+                    this.accepted = true;
                 }
             }
         }
 
-        operations() // starting program routine
+        operations(); // starting program routine
     }
 }
 
@@ -175,6 +171,6 @@ class Turingmachine {
  * node test
  */
 (() => {
-    console.log("Test...")
-    console.log(new Turingmachine("###BPBPVVEPE"))
+    console.log("Test...");
+    console.log(new Turingmachine("###BPBPVVEPE"));
 })()
