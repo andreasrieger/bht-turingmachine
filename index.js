@@ -130,6 +130,8 @@ const nodeData2 = (states) => {
             graphId = tempGraphId;
         }
     }
+    console.log(arr);
+    return arr;
 };
 
 /**
@@ -272,8 +274,8 @@ async function init() {
     console.log(states);
 
     const word = res["word"];
-    console.log("word:");
-    console.log(word);
+    // console.log("word:");
+    // console.log(word);
 
 
     const log = res["log"];
@@ -292,19 +294,19 @@ async function init() {
 
     else nodes = nodeData(log);
 
-    console.log("log:");
-    console.log(log);
+    // console.log("log:");
+    // console.log(log);
 
-    console.log("nodes:");
-    console.log(nodes);
+    // console.log("nodes:");
+    // console.log(nodes);
 
     const links = linkData(log);
-    console.log("links:");
-    console.log(links);
+    // console.log("links:");
+    // console.log(links);
 
     const transitions = transitionList(log);
-    console.log("transitions:")
-    console.log(transitions)
+    // console.log("transitions:")
+    // console.log(transitions)
 
 
     // init tape
