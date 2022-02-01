@@ -294,7 +294,7 @@ async function init() {
     tapeOutput(word);
 
     // init diagram
-    const diagram = initDiagram(nodes, links);
+    const diagram = initDiagram(transitions, links);
 
     // starting animation
     delayedOutput(diagram, states.length, transitions, 1);
