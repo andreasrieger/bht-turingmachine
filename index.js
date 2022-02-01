@@ -18,7 +18,7 @@ const
         ['B', 'T', 'B', 'T', 'S', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E']
     ] */
     proven = [
-        ['B', 'P', 'B', 'P', 'V', 'V', 'E', 'P', 'E', 'U'] // correct word except last char
+        ['B', 'P', 'B', 'P', 'V', 'V', 'E', 'P', 'E'] // correct word except last char
     ]
     ;
 
