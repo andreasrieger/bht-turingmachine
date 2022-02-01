@@ -18,7 +18,7 @@ const
         ['B', 'T', 'B', 'T', 'S', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E']
     ] */
     proven = [
-        ['B', 'U', 'P', 'B', 'P', 'V', 'V', 'E', 'P', 'E', 'U'],
+        ['B', 'P', 'B', 'P', 'V', 'V', 'E', 'P', 'E', 'U'], // correct word except last char
     ]
     ;
 
@@ -56,6 +56,7 @@ const randomSequence = async () => {
     }
     return arr;
 };
+
 
 /**
  * Method to create a new Turingmachine class object from whether
@@ -101,8 +102,8 @@ const nodeData = (log) => {
                 obj = { key: tempGraphId, color: "green" };
                 arr.push(obj);
                 graphIds.push(tempGraphId);
-            } 
-            
+            }
+
             else if (tempGraphId > 0 && !graphIds.includes(tempGraphId)) {
                 obj = { key: tempGraphId, color: "grey" };
                 arr.push(obj);
@@ -174,16 +175,16 @@ const nextStep = (diagram, curState, nextState, head, prevHead, accState) => {
     }
     diagram.commitTransaction("coloring");
 
-/*     if ((curState < (accState - 1)) && (nextState == null)) {
-        console.log("Error")
-        const tapeElement = document.getElementById("th" + head);
-        tapeElement.classList.replace("bg-light", "bg-danger");
-        tapeElement.classList.replace("text-dark", "text-white");
-
-        const prevTapeElement = document.getElementById("th" + prevHead);
-        prevTapeElement.classList.replace("bg-secondary", "bg-light");
-        prevTapeElement.classList.replace("text-white", "text-dark");
-    } */
+    /*     if ((curState < (accState - 1)) && (nextState == null)) {
+            console.log("Error")
+            const tapeElement = document.getElementById("th" + head);
+            tapeElement.classList.replace("bg-light", "bg-danger");
+            tapeElement.classList.replace("text-dark", "text-white");
+    
+            const prevTapeElement = document.getElementById("th" + prevHead);
+            prevTapeElement.classList.replace("bg-secondary", "bg-light");
+            prevTapeElement.classList.replace("text-white", "text-dark");
+        } */
 
     if (curState < (accState - 1)) {
         const tapeElement = document.getElementById("th" + head);
@@ -209,7 +210,7 @@ const nextStep = (diagram, curState, nextState, head, prevHead, accState) => {
 const delayedOutput = (diagram, accState, transitions, delay) => {
 
     for (let i = 0, l = transitions.length; i < l; i++) {
-        const delayTime = i * delay * 1000;
+        const delayTime = i * delay * 100;
         setTimeout(
             (dg, curState, nextState, head, prevHead, aS) => {
                 nextStep(dg, curState, nextState, head, prevHead, aS);
@@ -244,40 +245,51 @@ const tapeOutput = word => {
 
 async function init() {
 
+    // starting the machine with a random word 
     const res = await tm(true);
 
+    /**
+     * getting the log data
+     */
+
     const states = res["states"];
-    console.log(states)
+    console.log(`states: ${states}`);
 
     const word = res["word"];
-    console.log(word)
+    console.log(`word: ${word}`);
+
 
     const log = res["log"];
-    
+
     let nodes = null;
     const nextState = log[log.length - 1]["nextState"];
-    
+
+
+    // adding log entry to add a final node to the diagram that is representing the unknown state 
     if (nextState != states.length - 1) {
         const read = word[log.length];
         log.push({ curState: nextState, head: log.length, read: read, write: '?', move: 'N', nextState: '?' });
         nodes = nodeData(log);
         nodes.push({ key: '?', color: "grey" });
     }
-    
-    console.log(log)
+
+
+    console.log(`log: ${log}`);
 
     const links = linkData(log);
-    console.log(links)
-    
-    const transitions = transitionList(log);
-    console.log(transitions)
+    console.log(`links: ${links}`);
 
-    // init diagram
-    const diagram = initDiagram(nodes, links);
+    const transitions = transitionList(log);
+    console.log(`transitions: ${transitions}`)
+
 
     // init tape
     tapeOutput(word);
 
+    // init diagram
+    const diagram = initDiagram(nodes, links);
+
+    // starting animation
     delayedOutput(diagram, states.length, transitions, 1);
 
 }
