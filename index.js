@@ -158,7 +158,6 @@ const nextStep = (diagram, curState, nextState, head, prevHead, accState) => {
     diagram.commitTransaction("coloring");
 
     if ((curState < (accState - 1)) && (nextState == null)) {
-        console.log("Error")
         const tapeElement = document.getElementById("th" + head);
         tapeElement.classList.replace("bg-light", "bg-danger");
         tapeElement.classList.replace("text-dark", "text-white");
@@ -202,9 +201,6 @@ const delayedOutput = (diagram, accState, transitions, delay) => {
         const delayTime = i * delay * 1000;
         setTimeout(
             (dg, curState, nextState, head, prevHead, aS) => {
-                console.log(i)
-                console.log(curState)
-                console.log(nextState)
                 nextStep(dg, curState, nextState, head, prevHead, aS);
             },
             delayTime,
