@@ -10,15 +10,12 @@ const
     sigma = ['B', 'E', 'P', 'S', 'T', 'V', 'X'],
 
     // Some proven reber words for testing purposes
-    /* proven = [
+    proven = [
         ['B', 'P', 'B', 'P', 'V', 'V', 'E', 'P', 'E'],
         ['B', 'T', 'B', 'T', 'S', 'S', 'X', 'X', 'T', 'V', 'V', 'E', 'T', 'E'],
         ['B', 'T', 'B', 'T', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E'],
         ['B', 'P', 'B', 'P', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'V', 'E', 'P', 'E'],
         ['B', 'T', 'B', 'T', 'S', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E']
-    ] */
-    proven = [
-        ['B', 'P', 'B', 'P', 'V', 'V', 'E', 'P', 'E'] // correct word except last char
     ]
     ;
 
@@ -80,88 +77,44 @@ The following lines need to be re-factored
 */
 
 
-/**
- * Extracting the log data for node creation in the diagram. Every node is representing a state.
- *   
- * @param {*} log 
- * @returns 
- */
-const nodeData = (log) => {
 
+
+
+const nodeData = (states) => {
     const arr = [];
     const graphIds = [];
     let graphId = null;
 
-    for (const state of log) {
-        const tempGraphId = state["curState"];
+    for (let i = 0, l = states.length; i < l; i++) {
 
-        if (tempGraphId != graphId) {
+        if (i != graphId) {
 
-            if (tempGraphId == 0) { // first node is green
-                arr.push({ key: tempGraphId, color: "green" });
-                graphIds.push(tempGraphId);
+            if (!graphIds.includes(i)) {
+                arr.push({ key: i, color: "grey" });
+                graphIds.push(i);
             }
 
-            else if (tempGraphId > 0 && !graphIds.includes(tempGraphId)) {
-                arr.push({ key: tempGraphId, color: "grey" });
-                graphIds.push(tempGraphId);
-            }
-
-            graphId = tempGraphId;
-        }
-    }
-
-    return arr;
-};
-
-
-const nodeData2 = (states) => {
-    const arr = [];
-    const graphIds = [];
-    let graphId = null;
-
-    for (const state of states) {
-        const tempGraphId = state["keys"];
-
-        if (tempGraphId != graphId) {
-
-            if (tempGraphId == 0) { // first node is green
-                arr.push({ key: tempGraphId, color: "grey" });
-                graphIds.push(tempGraphId);
-            }
-
-            else if (tempGraphId > 0 && !graphIds.includes(tempGraphId)) {
-                arr.push({ key: tempGraphId, color: "grey" });
-                graphIds.push(tempGraphId);
-            }
-            
-            graphId = tempGraphId;
+            graphId = i;
         }
     }
     console.log(arr);
     return arr;
 };
 
-/**
- * Extracting the log data for link creation in the diagram. Every link is representing a transition between two states.
- * 
- * @param {*} log 
- * @returns 
- */
-const linkData = (log) => {
+const linkData = (states) => {
     const arr = [];
-    let linkId = null;
 
-    for (const state of log) {
-        const tempLinkId = `${state["curState"]}${state["nextState"]}`;
-        if (tempLinkId != linkId) {
-            const label = `[${state["read"]}, ${state["write"]}, ${state["move"]}]`;
-            arr.push({ from: state["curState"], to: state["nextState"], key: tempLinkId, text: label, color: "white" });
-            linkId = tempLinkId;
+    for (let i = 0, l = states.length; i < l; i++) {
+        for (const key of Object.entries(states[i])) {
+            const label = `[${key[0]}, ${key[1][0]}, ${key[1][1]}]`;
+            arr.push({ from: i, to: key[1][2], key: (i + key[1][2]), label: label });
         }
     }
+    // console.log(arr);
     return arr;
 };
+
+
 
 const transitionList = (log) => {
     const arr = [];
@@ -322,7 +275,7 @@ async function init() {
 
     // init diagram
     // const diagram = initDiagram(nodes, links);
-    const diagram = initDiagram(nodeData2(states), links);
+    const diagram = initDiagram(nodeData(states), linkData(states));
 
     // starting animation
     delayedOutput(diagram, states.length, transitions, 1);

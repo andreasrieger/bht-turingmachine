@@ -3,11 +3,9 @@ function initDiagram(graphs, links) {
     const myDiagram =
         new go.Diagram("myDiagramDiv",  // create a Diagram for a HTML Div element
             { "undoManager.isEnabled": true }, // enable undo & redo
-            // { linkKeyProperty: "foo" } // should add a key property to links
-        )
-        ;
+        );
 
-    myDiagram.layout = new go.LayeredDigraphLayout();
+    myDiagram.layout = new go.LayeredDigraphLayout({ columnSpacing: 50 });
 
     // define a simple Node template
     myDiagram.nodeTemplate =
@@ -23,12 +21,12 @@ function initDiagram(graphs, links) {
 
     // but use the default Link template, by not setting Diagram.linkTemplate
     myDiagram.linkTemplate =
-        new go.Link({ curviness: -20 })
+        new go.Link("Bezier", { curviness: -20 })
             // .bind("key", "key")
             .add(new go.Shape(),
                 new go.Shape({ toArrow: "Standard" }),
                 new go.TextBlock({ segmentOffset: new go.Point(0, -15), background: "white" })
-                    .bind("text", "text"));
+                    .bind("text", "label"));
 
     myDiagram.linkKeyProperty = "key";
 
