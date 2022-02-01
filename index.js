@@ -121,12 +121,20 @@ const nodeData2 = (states) => {
     let graphId = null;
 
     for (const state of states) {
-        const tempGraphId = state["key"];
+        const tempGraphId = state["keys"];
+
         if (tempGraphId != graphId) {
-            if (tempGraphId > 0 && !graphIds.includes(tempGraphId)) {
+
+            if (tempGraphId == 0) { // first node is green
                 arr.push({ key: tempGraphId, color: "grey" });
                 graphIds.push(tempGraphId);
             }
+
+            else if (tempGraphId > 0 && !graphIds.includes(tempGraphId)) {
+                arr.push({ key: tempGraphId, color: "grey" });
+                graphIds.push(tempGraphId);
+            }
+            
             graphId = tempGraphId;
         }
     }
@@ -270,8 +278,8 @@ async function init() {
      */
 
     const states = res["states"];
-    console.log("states:");
-    console.log(states);
+    // console.log("states:");
+    // console.log(states);
 
     const word = res["word"];
     // console.log("word:");
