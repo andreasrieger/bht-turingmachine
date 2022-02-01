@@ -115,6 +115,23 @@ const nodeData = (log) => {
 };
 
 
+const nodeData2 = (states) => {
+    const arr = [];
+    const graphIds = [];
+    let graphId = null;
+
+    for (const state of states) {
+        const tempGraphId = state["key"];
+        if (tempGraphId != graphId) {
+            if (tempGraphId > 0 && !graphIds.includes(tempGraphId)) {
+                arr.push({ key: tempGraphId, color: "grey" });
+                graphIds.push(tempGraphId);
+            }
+            graphId = tempGraphId;
+        }
+    }
+};
+
 /**
  * Extracting the log data for link creation in the diagram. Every link is representing a transition between two states.
  * 
@@ -294,7 +311,8 @@ async function init() {
     tapeOutput(word);
 
     // init diagram
-    const diagram = initDiagram(transitions, links);
+    // const diagram = initDiagram(nodes, links);
+    const diagram = initDiagram(nodeData2(states), links);
 
     // starting animation
     delayedOutput(diagram, states.length, transitions, 1);
