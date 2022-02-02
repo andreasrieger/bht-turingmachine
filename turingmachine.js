@@ -139,7 +139,7 @@ class Turingmachine {
                     write: write,
                     move: move,
                     nextState: nextState
-                })
+                });
 
                 if (move == 'R' && !this.accepted) {
                     tape[head] = write;
@@ -159,6 +159,18 @@ class Turingmachine {
                     this.accepted = true;
                     operations();
                 }
+            }
+
+            // test
+            else {
+                this.log.push({
+                    curState: state,
+                    head: head,
+                    read: read,
+                    write: read,
+                    move: 'N',
+                    nextState: state
+                });
             }
         }
 
