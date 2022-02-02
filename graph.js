@@ -5,7 +5,7 @@ function initDiagram(graphs, links) {
             { "undoManager.isEnabled": true }, // enable undo & redo
         );
 
-    myDiagram.layout = new go.LayeredDigraphLayout({ columnSpacing: 50 });
+    myDiagram.layout = new go.LayeredDigraphLayout({ columnSpacing: 50, layerSpacing: 40 });
 
     // define a simple Node template
     myDiagram.nodeTemplate =
@@ -21,12 +21,19 @@ function initDiagram(graphs, links) {
 
     // but use the default Link template, by not setting Diagram.linkTemplate
     myDiagram.linkTemplate =
-        new go.Link("Bezier", { curviness: -20 })
-            // .bind("key", "key")
-            .add(new go.Shape(),
+        new go.Link({ curve: go.Link.Bezier, curviness: 20 })
+            .add(
+                new go.Shape(),
                 new go.Shape({ toArrow: "Standard" }),
-                new go.TextBlock({ segmentOffset: new go.Point(0, -15), background: "white" })
-                    .bind("text", "label"));
+                new go.Panel("Auto", { segmentOffset: new go.Point(0, -25) })
+                    .add(
+                        new go.Shape("RoundedRectangle", { fill: "white" }),
+                        new go.TextBlock({ background: "white", margin: 2 }).bind("text", "label")
+                    )
+            )
+        ;
+
+
 
     myDiagram.linkKeyProperty = "key";
 

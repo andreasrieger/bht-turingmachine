@@ -19,7 +19,7 @@ const blank = '#'; // using the number sign (#) instead of blanks (' ') for test
 const states = [
     // state 0
     {
-        [blank]: [blank, 'R', 0],
+        // [blank]: [blank, 'R', 0],
         'B': [blank, 'R', 1]
     },
     // state 1

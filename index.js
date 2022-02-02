@@ -11,15 +11,14 @@ const
 
     // Some proven reber words for testing purposes
     proven = [
-        ['B', 'U', 'P', 'B', 'P', 'V', 'V', 'E', 'P', 'E'],
-        ['B', 'U', 'T', 'B', 'T', 'S', 'S', 'X', 'X', 'T', 'V', 'V', 'E', 'T', 'E'],
-        ['B', 'U', 'T', 'B', 'T', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E'],
-        ['B', 'U', 'P', 'B', 'P', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'V', 'E', 'P', 'E'],
-        ['B', 'U', 'T', 'B', 'T', 'S', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E']
+        ['B', 'P', 'B', 'P', 'V', 'V', 'E', 'P', 'E'],
+        ['B', 'T', 'B', 'T', 'S', 'S', 'X', 'X', 'T', 'V', 'V', 'E', 'T', 'E'],
+        ['B', 'T', 'B', 'T', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E'],
+        ['B', 'P', 'B', 'P', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'V', 'E', 'P', 'E'],
+        ['B', 'T', 'B', 'T', 'S', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E']
     ]
     ;
 
-// let blank = null;
 
 /**
 * This method returns a random number between min and max.
@@ -80,28 +79,29 @@ const nodeData = (states) => {
 
     for (let i = 0, l = states.length; i < l; i++) {
 
-        if (i != graphId) {
-
+        if (i != graphId && !graphIds.includes(i)) {
+            if (i == 0) {
+                arr.push({ key: i, color: "green" });
+                graphIds.push(i);
+            }
             if (!graphIds.includes(i)) {
                 arr.push({ key: i, color: "grey" });
                 graphIds.push(i);
             }
-
             graphId = i;
         }
     }
-    console.log(arr);
     return arr;
 };
 
 
 const linkData = (states) => {
     const arr = [];
-
     for (let i = 0, l = states.length; i < l; i++) {
         for (const key of Object.entries(states[i])) {
             const label = `[${key[0]}, ${key[1][0]}, ${key[1][1]}]`;
-            arr.push({ from: i, to: key[1][2], key: (i + key[1][2]), label: label });
+            const linkKey = i.toString() + key[1][2].toString();
+            arr.push({ from: i, to: key[1][2], key: linkKey, label: label });
         }
     }
     return arr;
@@ -110,16 +110,17 @@ const linkData = (states) => {
 
 const transitionList = (log) => {
     const arr = [];
+    arr.push({ from: log[0]["curState"], to: log[0]["curState"], key: `${log[0]["curState"]}${log[0]["curState"]}`, head: log[0]["head"], write: log[0]["read"] });
+
     for (const transition of log) {
         const key = `${transition["curState"]}${transition["nextState"]}`;
-        arr.push({ from: transition["curState"], to: transition["nextState"], key: key, head: transition["head"] });
+        arr.push({ from: transition["curState"], to: transition["nextState"], key: key, head: transition["head"], write: transition["write"] });
     }
     return arr;
 };
 
 
-const nextStep = (diagram, curState, nextState, head, prevHead, accState) => {
-
+const nextStep = (diagram, curState, nextState, head, prevHead, write, accState) => {
 
 
     //To do: check whether last node is an accepting state -> green else -> red
@@ -135,7 +136,7 @@ const nextStep = (diagram, curState, nextState, head, prevHead, accState) => {
 
 
 
-    const node = diagram.model.findNodeDataForKey(curState);
+    const node = diagram.model.findNodeDataForKey(nextState);
     // const next = diagram.model.findNodeDataForKey(nextState);// last one throws error due to nextState not existing
 
     diagram.startTransaction("coloring");
@@ -146,20 +147,21 @@ const nextStep = (diagram, curState, nextState, head, prevHead, accState) => {
     diagram.commitTransaction("coloring");
 
     /*     if ((curState < (accState - 1)) && (nextState == null)) {
-            console.log("Error")
-            const tapeElement = document.getElementById("th" + head);
-            tapeElement.classList.replace("bg-light", "bg-danger");
-            tapeElement.classList.replace("text-dark", "text-white");
-    
-            const prevTapeElement = document.getElementById("th" + prevHead);
-            prevTapeElement.classList.replace("bg-secondary", "bg-light");
-            prevTapeElement.classList.replace("text-white", "text-dark");
-        } */
+        console.log("Error")
+        const tapeElement = document.getElementById("th" + head);
+        tapeElement.classList.replace("bg-light", "bg-danger");
+        tapeElement.classList.replace("text-dark", "text-white");
+        
+        const prevTapeElement = document.getElementById("th" + prevHead);
+        prevTapeElement.classList.replace("bg-secondary", "bg-light");
+        prevTapeElement.classList.replace("text-white", "text-dark");
+    } */
 
     if (curState < (accState - 1)) {
         const tapeElement = document.getElementById("th" + head);
         tapeElement.classList.replace("bg-light", "bg-secondary");
         tapeElement.classList.replace("text-dark", "text-white");
+        tapeElement.innerText = write;
 
         const prevTapeElement = document.getElementById("th" + prevHead);
         prevTapeElement.classList.replace("bg-secondary", "bg-light");
@@ -177,20 +179,23 @@ const nextStep = (diagram, curState, nextState, head, prevHead, accState) => {
 };
 
 
-const delayedOutput = (diagram, accState, transitions, delay) => {
+const delayedOutput = (diagram, accState, transitions) => {
 
+    const delay = document.getElementById("customRange").value;
     for (let i = 0, l = transitions.length; i < l; i++) {
-        const delayTime = i * delay * 100;
+        const delayTime = i * delay * 200;
         setTimeout(
-            (dg, curState, nextState, head, prevHead, aS) => {
-                nextStep(dg, curState, nextState, head, prevHead, aS);
+            (dg, curState, nextState, head, prevHead, write, aS) => {
+                nextStep(dg, curState, nextState, head, prevHead, write, aS);
             },
             delayTime,
             diagram, //diagram object
             transitions[i]["from"], //curState
-            (i + 1 < l) ? transitions[i + 1]["from"] : null, //nextState
+            transitions[i]["to"], //nextState
+            // (i + 1 < l) ? transitions[i + 1]["from"] : null, //nextState
             transitions[i]["head"], //head
             (i > 0) ? transitions[i - 1]["head"] : 0, //prevHead
+            transitions[i]["write"],
             accState //accepting state
         );
     }
@@ -217,7 +222,6 @@ async function init() {
 
     // starting the machine with a random word 
     const res = await tm(true);
-    // blank = res["blank"];
     const transitions = transitionList(res["log"]);
 
     // init tape
@@ -227,7 +231,7 @@ async function init() {
     const diagram = initDiagram(nodeData(res["states"]), linkData(res["states"]));
 
     // starting animation
-    delayedOutput(diagram, res["states"].length, transitions, 1);
+    delayedOutput(diagram, res["states"].length, transitions);
 
 }
 
