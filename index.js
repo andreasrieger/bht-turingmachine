@@ -11,117 +11,20 @@ const
 
     // Some proven reber words for testing purposes
     proven = [
-        ['B', 'P', 'B', 'P', 'V', 'V', 'E', 'P', 'E', 'U'],
-        ['B', 'T', 'B', 'T', 'S', 'S', 'X', 'X', 'T', 'V', 'V', 'E', 'T', 'E', 'U'],
-        ['B', 'T', 'B', 'T', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E', 'U'],
-        ['B', 'P', 'B', 'P', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'V', 'E', 'P', 'E', 'U'],
-        ['B', 'T', 'B', 'T', 'S', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E', 'U']
+        ['B', 'P', 'B', 'P', 'V', 'V', 'E', 'P', 'E'],
+        ['B', 'T', 'B', 'T', 'S', 'S', 'X', 'X', 'T', 'V', 'V', 'E', 'T', 'E'],
+        ['B', 'T', 'B', 'T', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E'],
+        ['B', 'P', 'B', 'P', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'V', 'E', 'P', 'E'],
+        ['B', 'T', 'B', 'T', 'S', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E']
     ]
     ;
 
+let response = null;
+let diagram = null;
 
-/**
-* This method returns a random number between min and max.
-*
-* @param {*} min
-* @param {*} max
-* @returns
-*/
-const randomInt = async (min, max) => {
-    return (
-        Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min) + 1)) +
-        Math.ceil(min)
-    )
-};
+const nextStep = (curState, nextState, head, prevHead, write) => {
 
-
-/**
- * This method returns a random selection of a
- * random number of words (chars) from sigma.
- *
- * @param {*} abc
- * @returns
- */
-const randomSequence = async () => {
-    // To do: set min and max
-    const
-        n = sigma.length,
-        arr = [],
-        x = await randomInt(5, 10);
-
-    for (let i = 0; i < x; i++) {
-        arr.push(sigma[(0 + Math.floor(Math.random() * n)) % n]);
-    }
-    return arr;
-};
-
-
-/**
- * Method to create a new Turingmachine class object from whether
- * a list of proven words or a randomly created word based on sigma.
- *
- * @param {*} proof
- * @returns an object with the word, the machine's decision and a log
- */
-const tm = async (proof) => {
-    if (proof) {
-        return new Turingmachine(proven[await randomInt(0, proven.length - 1)].join(''));
-    } else {
-        return new Turingmachine((await randomSequence()).join(''));
-    }
-};
-
-
-const nodeData = (states) => {
-    const arr = [];
-    const graphIds = [];
-    let graphId = null;
-
-    for (let i = 0, l = states.length; i < l; i++) {
-
-        if (i != graphId && !graphIds.includes(i)) {
-            if (i == 0) {
-                arr.push({ key: i, color: "green" });
-                graphIds.push(i);
-            }
-            if (!graphIds.includes(i)) {
-                arr.push({ key: i, color: "grey" });
-                graphIds.push(i);
-            }
-            graphId = i;
-        }
-    }
-    return arr;
-};
-
-
-const linkData = (states) => {
-    const arr = [];
-    for (let i = 0, l = states.length; i < l; i++) {
-        for (const key of Object.entries(states[i])) {
-            const label = `[${key[0]}, ${key[1][0]}, ${key[1][1]}]`;
-            const linkKey = i.toString() + key[1][2].toString();
-            arr.push({ from: i, to: key[1][2], key: linkKey, label: label });
-        }
-    }
-    return arr;
-};
-
-
-const transitionList = (log) => {
-    const arr = [];
-    arr.push({ from: log[0]["curState"], to: log[0]["curState"], key: `${log[0]["curState"]}${log[0]["curState"]}`, head: log[0]["head"], write: log[0]["read"] });
-
-    for (const transition of log) {
-        const key = `${transition["curState"]}${transition["nextState"]}`;
-        arr.push({ from: transition["curState"], to: transition["nextState"], key: key, head: transition["head"], write: transition["write"] });
-    }
-    return arr;
-};
-
-
-const nextStep = (diagram, curState, nextState, head, prevHead, write, accState) => {
-
+    const accState = response["states"].length;
 
     //To do: check whether last node is an accepting state -> green else -> red
 
@@ -167,8 +70,16 @@ const nextStep = (diagram, curState, nextState, head, prevHead, write, accState)
         prevTapeElement.classList.replace("text-white", "text-dark");
     }
 
-    else if (curState == (accState - 1) && curState == nextState){
-        console.log("Bingo!")
+    else if (curState == (accState - 1)) {
+        const tapeElements = document.querySelectorAll(".tape-element");
+        for (let i = 0, l = tapeElements.length; i < l; i++) {
+            tapeElements[i].classList.replace("bg-light", "bg-success");
+            tapeElements[i].classList.replace("bg-secondary", "bg-success");
+            tapeElements[i].classList.replace("text-dark", "text-white");
+        }
+    }
+    
+    else if (curState == (accState - 1) && curState == nextState) {
         const tapeElement = document.getElementById("th" + head);
         tapeElement.classList.replace("bg-light", "bg-secondary");
         tapeElement.classList.replace("text-dark", "text-white");
@@ -179,20 +90,12 @@ const nextStep = (diagram, curState, nextState, head, prevHead, write, accState)
         prevTapeElement.classList.replace("text-white", "text-dark");
     }
 
-    else if (curState == (accState - 1)) {
-        const tapeElements = document.querySelectorAll(".tape-element");
-        for (let i = 0, l = tapeElements.length; i < l; i++) {
-            tapeElements[i].classList.replace("bg-light", "bg-success");
-            tapeElements[i].classList.replace("bg-secondary", "bg-success");
-            tapeElements[i].classList.replace("text-dark", "text-white");
-        }
-    }
 };
 
 /**
  * Trying to find link references
  */
-const findLinksTest = (diagram) => {
+const findLinksTest = () => {
     var allNodesIt = diagram.nodes;
     var nodeLinkStr = "";
     while (allNodesIt.next()) {
@@ -211,7 +114,7 @@ const findLinksTest = (diagram) => {
 
 
 
-const delayedOutput = (diagram, accState, transitions) => {
+const delayedOutput = (transitions) => {
 
     findLinksTest(diagram);
 
@@ -219,21 +122,19 @@ const delayedOutput = (diagram, accState, transitions) => {
 
     for (let i = 0, l = transitions.length; i < l; i++) {
         const delayTime = i * delay * 200;
-        const foo = setTimeout(
-            (dg, curState, nextState, head, prevHead, write, aS) => {
-                nextStep(dg, curState, nextState, head, prevHead, write, aS);
+        setTimeout(
+            (curState, nextState, head, prevHead, write) => {
+                nextStep(curState, nextState, head, prevHead, write);
             },
             delayTime,
-            diagram, //diagram object
             transitions[i]["from"], //curState
             transitions[i]["to"], //nextState
             // (i + 1 < l) ? transitions[i + 1]["from"] : null, //nextState
             transitions[i]["head"], //head
             (i > 0) ? transitions[i - 1]["head"] : 0, //prevHead
-            transitions[i]["write"],
-            accState //accepting state
+            transitions[i]["write"]
         );
-        console.log(foo);
+        // if (i == l) console.log(response["accepted"]);
     }
 };
 
@@ -284,24 +185,42 @@ const tapeOutput = word => {
 async function init() {
 
     // starting the machine with a random word 
-    const res = await tm(true);
-    const transitions = transitionList(res["log"]);
+    // const res = await tm(true);
 
-    // init tape
-    tapeOutput(res["word"]);
 
-    // init diagram
-    const diagram = initDiagram(nodeData(res["states"]), linkData(res["states"]));
+
+
+
+    document.getElementById("inlineRadio1").addEventListener("input", async () => {
+        const inputValue = await getProofSequence();
+        document.getElementById("formControl1").value = inputValue;
+    });
+
+    document.getElementById("inlineRadio2").addEventListener("input", async () => {
+        const inputValue = await getRandomSequence();
+        document.getElementById("formControl1").value = inputValue;
+    });
+
+    document.getElementById("launchDiagram").addEventListener("click", async () => {
+        const inputValue = document.getElementById("formControl1").value;
+        if (inputValue != null || inputValue != "") {
+            response = new Turingmachine(inputValue);
+            console.log(response)
+
+            // init diagram
+            diagram = initDiagram(nodeData(response["states"]), linkData(response["states"]));
+
+            // init tape
+            tapeOutput(response["word"]);
+        }
+    });
 
     // starting animation
-    delayedOutput(diagram, res["states"].length, transitions);
-
-    document.getElementById("startButton").addEventListener("click", () => {
-        request();
+    document.getElementById("startButton").addEventListener("click", async () => {
+        delayedOutput(await transitionList(response["log"]));
     });
 
     document.getElementById("stopButton").addEventListener("click", () => {
-        clearInterval(run)
     });
 
 }
