@@ -19,8 +19,11 @@ const
     ]
     ;
 
-let response = null;
-let diagram = null;
+const intervalFactor = 100;
+let response, diagram, transitions, intervalId, accState = null;
+let interval = intervalFactor * document.getElementById("animationInterval").value;
+let counter = 0;
+
 
 const nextStep = (curState, nextState, head, prevHead, write) => {
 
@@ -39,17 +42,7 @@ const nextStep = (curState, nextState, head, prevHead, write) => {
 
 
 
-    const node = diagram.model.findNodeDataForKey(nextState);
-    // console.log(node.data.text)
-    // const next = diagram.model.findNodeDataForKey(nextState);// last one throws error due to nextState not existing
-
-    diagram.startTransaction("coloring");
-    if (node !== null) {
-        diagram.model.setDataProperty(node, "color", "green");
-        // diagram.model.setDataProperty(link, "color", "green");
-    }
-    diagram.commitTransaction("coloring");
-
+    diagramOutputControl(nextState);
 
 
     if (curState == 0 && prevHead == 0) {
@@ -70,15 +63,6 @@ const nextStep = (curState, nextState, head, prevHead, write) => {
         prevTapeElement.classList.replace("text-white", "text-dark");
     }
 
-    else if (curState == (accState - 1)) {
-        const tapeElements = document.querySelectorAll(".tape-element");
-        for (let i = 0, l = tapeElements.length; i < l; i++) {
-            tapeElements[i].classList.replace("bg-light", "bg-success");
-            tapeElements[i].classList.replace("bg-secondary", "bg-success");
-            tapeElements[i].classList.replace("text-dark", "text-white");
-        }
-    }
-    
     else if (curState == (accState - 1) && curState == nextState) {
         const tapeElement = document.getElementById("th" + head);
         tapeElement.classList.replace("bg-light", "bg-secondary");
@@ -89,6 +73,17 @@ const nextStep = (curState, nextState, head, prevHead, write) => {
         prevTapeElement.classList.replace("bg-secondary", "bg-light");
         prevTapeElement.classList.replace("text-white", "text-dark");
     }
+
+    else if (curState == (accState - 1)) {
+        const tapeElements = document.querySelectorAll(".tape-element");
+        for (let i = 0, l = tapeElements.length; i < l; i++) {
+            tapeElements[i].classList.replace("bg-light", "bg-success");
+            tapeElements[i].classList.replace("bg-secondary", "bg-success");
+            tapeElements[i].classList.replace("text-dark", "text-white");
+        }
+    }
+
+
 
 };
 
@@ -138,35 +133,91 @@ const delayedOutput = (transitions) => {
     }
 };
 
-
-// start testing timeouts
-
-function setDeceleratingTimeout(callback, factor, times) {
-    var internalCallback = function (tick, counter) {
-        return function () {
-            if (--tick >= 0) {
-                window.setTimeout(internalCallback, ++counter * factor);
-                callback();
-            }
-        }
-    }(times, 0);
-    window.setTimeout(internalCallback, factor);
+const diagramOutputControl = nextState => {
+    const node = diagram.model.findNodeDataForKey(nextState);
+    diagram.startTransaction("coloring");
+    if (node !== null) {
+        diagram.model.setDataProperty(node, "color", "green");
+    }
+    diagram.commitTransaction("coloring");
 };
 
 
-let interval = 1000 * document.getElementById("animationInterval").value;
-// let run = setInterval(request, interval); // start setInterval as "run"
+const tapeOutputControl = (elem, curVal, newVal, newText) => {
+    elem.classList.replace(curVal, newVal).innerText = newText;
+    // elem.innerText = newText;
+};
 
-function request() {
-    console.log(interval); // firebug or chrome log
-    clearInterval(run); // stop the setInterval()
-    run = setInterval(request, interval); // start the setInterval()
-}
 
-// end testing timeout
+const stageOutputNextFrame = () => {
+    const
+        curState = transitions[counter]["from"],
+        nextState = transitions[counter]["to"],
+        head = transitions[counter]["head"],
+        prevHead = (counter > 0) ? transitions[counter - 1]["head"] : 0,
+        write = transitions[counter]["write"]
+        ;
+
+    if (counter < transitions.length-1) {
+
+        diagramOutputControl(nextState); // diagram output
+
+        // tape output
+        if (curState == 0 && prevHead == 0) {
+            const tapeElement = document.getElementById("th" + head);
+            tapeOutputControl(tapeElement, "bg-light", "bg-secondary", write);
+            tapeOutputControl(tapeElement, "text-dark", "text-white", write);
+
+            tapeElement.innerText = write;
+        }
+
+        else if (curState < (accState - 1)) {
+            const tapeElement = document.getElementById("th" + head);
+            tapeOutputControl(tapeElement, "bg-light", "bg-secondary", write);
+            tapeOutputControl(tapeElement, "text-dark", "text-white", write);
+
+            tapeElement.innerText = write;
+
+            const prevTapeElement = document.getElementById("th" + prevHead);
+            prevTapeElement.classList.replace("bg-secondary", "bg-light");
+            prevTapeElement.classList.replace("text-white", "text-dark");
+        }
+
+        else if (curState == (accState - 1)) {
+            const tapeElements = document.querySelectorAll(".tape-element");
+            for (let i = 0, l = tapeElements.length; i < l; i++) {
+                tapeElements[i].classList.replace("bg-light", "bg-success");
+                tapeElements[i].classList.replace("bg-secondary", "bg-success");
+                tapeElements[i].classList.replace("text-dark", "text-white");
+            }
+        }
+
+        else if (curState == (accState - 1) && curState == nextState) {
+            const tapeElement = document.getElementById("th" + head);
+            tapeElement.classList.replace("bg-light", "bg-secondary");
+            tapeElement.classList.replace("text-dark", "text-white");
+            tapeElement.innerText = write;
+
+            const prevTapeElement = document.getElementById("th" + prevHead);
+            prevTapeElement.classList.replace("bg-secondary", "bg-light");
+            prevTapeElement.classList.replace("text-white", "text-dark");
+        }
+
+        counter++;
+        console.log(counter)
+    }
+
+    else {
+        clearInterval(intervalId);
+        enableAllButtons();
+    }
+};
 
 
 const tapeOutput = word => {
+    const tapeWrap = document.getElementById("tapeOutput");
+    tapeWrap.innerHTML = "";
+
     const output = document.createElement("p");
     for (let i = 0, l = word.length; i < l; i++) {
         const textWrap = document.createElement("i");
@@ -178,34 +229,54 @@ const tapeOutput = word => {
         textWrap.appendChild(text);
         output.appendChild(textWrap);
     }
-    document.getElementById("tapeOutput").appendChild(output);
+    tapeWrap.appendChild(output);
 };
 
 
-async function init() {
-
-    // starting the machine with a random word 
-    // const res = await tm(true);
-
-
-
+const checkInputValue = inputValue => {
+    if (inputValue.length != 0) {
+        document.getElementById("launchDiagram").removeAttribute("disabled");
+    } else document.getElementById("launchDiagram").setAttribute("disabled", "");
+};
 
 
-    document.getElementById("inlineRadio1").addEventListener("input", async () => {
-        const inputValue = await getProofSequence();
-        document.getElementById("formControl1").value = inputValue;
-    });
+const enableAllButtons = () => {
+    const disabledButtons = document.querySelectorAll("button");
+    for (const button of disabledButtons) {
+        if (button.hasAttribute("disabled")) {
+            button.removeAttribute("disabled");
+        }
+    }
+};
 
-    document.getElementById("inlineRadio2").addEventListener("input", async () => {
-        const inputValue = await getRandomSequence();
-        document.getElementById("formControl1").value = inputValue;
-    });
+const disableEnable = element => {
+    if (!element.hasAttribute("disabled")) {
+        element.disabled = true;
+    } else element.removeAttribute("disabled");
+};
 
-    document.getElementById("launchDiagram").addEventListener("click", async () => {
+/**
+ * General function initialization when the document is loaded
+ */
+document.addEventListener("DOMContentLoaded", function (event) {
+    console.log("DOM fully loaded and parsed");
+    enableAllButtons();
+
+    const launchButton = document.getElementById("launchDiagram");
+
+    launchButton.addEventListener("click", async function () {
+
+        if (typeof diagram !== "undefined") {
+            diagram.div = null;
+            // diagram.model.clear();
+        }
+
         const inputValue = document.getElementById("formControl1").value;
-        if (inputValue != null || inputValue != "") {
-            response = new Turingmachine(inputValue);
-            console.log(response)
+        if (inputValue.length != 0) {
+            response = new Turingmachine(inputValue.toUpperCase());
+            accState = response["states"].length;
+            transitions = await transitionList(response["log"]);
+            console.log(transitions.length)
 
             // init diagram
             diagram = initDiagram(nodeData(response["states"]), linkData(response["states"]));
@@ -213,23 +284,49 @@ async function init() {
             // init tape
             tapeOutput(response["word"]);
         }
+        disableEnable(this);
     });
+
+    document.getElementById("inlineRadio1").addEventListener("input", async () => {
+        const inputValue = await getProofSequence();
+        document.getElementById("formControl1").value = inputValue;
+        checkInputValue(inputValue);
+    });
+
+    document.getElementById("inlineRadio2").addEventListener("input", async () => {
+        const inputValue = await getRandomSequence();
+        document.getElementById("formControl1").value = inputValue;
+        checkInputValue(inputValue);
+    });
+
+    document.getElementById("formControl1").addEventListener("input", async () => {
+        const inputValue = document.getElementById("formControl1").value;
+        checkInputValue(inputValue);
+    });
+
+
+    document.getElementById("stopButton").addEventListener("click", function () {
+        clearInterval(intervalId);
+        enableAllButtons();
+    });
+
+
+    document.getElementById("nextButton").addEventListener("click", () => {
+        stageOutputNextFrame();
+    });
+
 
     // starting animation
-    document.getElementById("startButton").addEventListener("click", async () => {
-        delayedOutput(await transitionList(response["log"]));
+    document.getElementById("startButton").addEventListener("click", async function () {
+        disableEnable(this);
+        intervalId = setInterval(stageOutputNextFrame, interval);
     });
 
-    document.getElementById("stopButton").addEventListener("click", () => {
-    });
 
-}
+    document.getElementById("animationInterval").addEventListener("input", () => {
+        interval = intervalFactor * document.getElementById("animationInterval").value;
+        const outputValue = document.getElementById("animationInterval").value + " Sekunde(n)";
+        document.getElementById("animationIntervalOutput").innerText = outputValue;
+    })
 
-
-/**
- * General function initialization when the document is loaded
- */
-document.addEventListener("DOMContentLoaded", function (event) {
-    console.log("DOM fully loaded and parsed");
-    init();
 })
