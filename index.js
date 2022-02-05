@@ -2,7 +2,7 @@
  * Turing machine simulation
  *
  * @Author: Andreas Rieger, s82456@bht-berlin.de
- * Date: 2022-01-23
+ * Date: 2022-01-23, updated: 2022-02-05
  */
 
 const
@@ -12,19 +12,28 @@ const
     // Some proven reber words for testing purposes
     proven = [
         ['B', 'P', 'B', 'P', 'V', 'V', 'E', 'P', 'E'],
-        // ['B', 'T', 'B', 'T', 'S', 'S', 'X', 'X', 'T', 'V', 'V', 'E', 'T', 'E'],
-        // ['B', 'T', 'B', 'T', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E'],
-        // ['B', 'P', 'B', 'P', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'V', 'E', 'P', 'E'],
-        // ['B', 'T', 'B', 'T', 'S', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E']
+        ['B', 'T', 'B', 'T', 'S', 'S', 'X', 'X', 'T', 'V', 'V', 'E', 'T', 'E'],
+        ['B', 'T', 'B', 'T', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E'],
+        ['B', 'P', 'B', 'P', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'P', 'X', 'V', 'V', 'E', 'P', 'E'],
+        ['B', 'T', 'B', 'T', 'S', 'X', 'X', 'V', 'P', 'S', 'E', 'T', 'E']
     ]
     ;
 
-const intervalFactor = 100;
+const intervalFactor = 1000;
 let response, diagram, transitions, intervalId, accState = null;
 let interval = intervalFactor * document.getElementById("animationInterval").value;
 let counter = 0;
 
+const activateStageElements = () => {
+    tapeWrapResetColor();
+    tapeWrapSetColor("border-primary");
+    statusOutputSetColor("border-primary");
+    diagramWrapSetColor("border-primary");
+    // stage-element
+};
 
+
+// tape output
 const tapeSetActive = head => {
     // console.log("tapeSetActive")
     const elem = document.getElementById("th" + head);
@@ -42,14 +51,12 @@ const tapeSetInactive = head => {
 
 
 const tapeSetError = head => {
-    // console.log("tapeSetError")
-    // console.log("head:" + head)
     const elem = document.getElementById("th" + head);
     elem.classList.replace("bg-secondary", "bg-danger");
     elem.classList.replace("bg-light", "bg-danger");
     elem.classList.replace("text-dark", "text-white");
+    tapeWrapSetColor("border-danger");
 };
-
 
 const tapeSetSuccess = () => {
     const elem = document.querySelectorAll(".tape-element");
@@ -58,54 +65,96 @@ const tapeSetSuccess = () => {
         elem[i].classList.replace("bg-secondary", "bg-success");
         elem[i].classList.replace("text-dark", "text-white");
     }
+    tapeWrapSetColor("border-success");
 };
 
+const tapeWrapSetColor = color => {
+    const elem = document.getElementById("tapeOutputWrap");
+    elem.classList.remove("border-danger", "border-success");
+    elem.classList.add(color);
+};
+
+const tapeWrapResetColor = () => {
+    const elem = document.getElementById("tapeOutputWrap");
+    elem.classList.remove("border-danger", "border-success", "border-primary");
+};
 
 const tapeWrite = (head, write) => {
     const elem = document.getElementById("th" + head);
     elem.innerText = write;
 };
 
+// status output
+const statusOutputSetColor = color => {
+    const nodes = document.querySelectorAll(".status-output");
+    for (const node of nodes) {
+        node.classList.remove("border-danger", "border-success");
+        node.classList.add(color);
+    }
+};
+
+const statusStateOutput = curState => {
+    const elem = document.getElementById("stateOutput");
+    elem.innerText = curState;
+};
+
+const statusWriteOutput = write => {
+    const elem = document.getElementById("writeOutput");
+    elem.innerText = write;
+};
+
+const statusReadOutput = read => {
+    const elem = document.getElementById("readOutput");
+    elem.innerText = read;
+};
+
+const statusMoveOutput = move => {
+    const elem = document.getElementById("moveOutput");
+    elem.innerText = move;
+};
+
+// diagram output
+const diagramWrapSetColor = color => {
+    const elem = document.getElementById("myDiagramDiv");
+    elem.classList.remove("border-danger", "border-success");
+    elem.classList.add("border", color);
+};
 
 const stageOutputNextFrame = () => {
-
+    
     const
-        transition = transitions[counter],
-        curState = transition["from"],
+    transition = transitions[counter],
+    curState = transition["from"],
         nextState = transition["to"],
         head = transition["head"],
         nextHead = (counter < transitions.length - 1) ? transitions[counter + 1]["head"] : transition["head"],
         read = transition["read"],
+        nextRead = (counter < transitions.length - 1) ? transitions[counter + 1]["read"] : transition["read"],
         write = transition["write"],
+        nextWrite = (counter < transitions.length - 1) ? transitions[counter + 1]["write"] : transition["write"],
         move = transition["move"],
+        nextMove = (counter < transitions.length - 1) ? transitions[counter + 1]["move"] : transition["move"],
+
         first = Math.ceil(interval / 3),
         second = Math.ceil((interval / 3) * 2)
         ;
 
-    // console.log(`-- `)
-    // console.log(`counter: ${counter}`)
-    // console.log(`curState: ${curState}`)
-    // console.log(`nextState: ${nextState}`)
-    // console.log(`head: ${head}`)
-    // console.log(`nextHead: ${nextHead}`)
-    // console.log(`read: ${read}`)
-    // console.log(`write: ${write}`)
-    // console.log(`should move: ${move}`)
-
-
-
 
     if (head < response["word"].length) {
-        console.log(counter, transitions.length, head, read, write)
-        tapeSetActive(head);
-        setTimeout(tapeWrite, first, head, write);
 
-        if (head < response["word"].length - 1) {
-            setTimeout(tapeSetInactive, second, head);
-            setTimeout(tapeSetActive, second, nextHead);
-        }
+        // tape output
+        tapeSetActive(nextHead);
+        tapeSetInactive(head);
+        tapeWrite(head, write);
+
+        // configuration output
+        statusStateOutput(nextState);
+        statusReadOutput(nextRead);
+        statusWriteOutput(nextWrite);
+        statusMoveOutput(nextMove);
 
         if (counter == transitions.length - 1 && response["accepted"]) {
+            initTapeOutput(response["word"]);
             tapeSetSuccess();
         }
         else if (counter == transitions.length - 1 && !response["accepted"]) {
@@ -115,9 +164,12 @@ const stageOutputNextFrame = () => {
 
     if (counter < transitions.length - 1) {
         counter++;
-        diagramSetInactive(curState); // diagram output
-        diagramSetActive(nextState); // diagram output
+
+        // diagram output
+        diagramSetInactive(curState);
+        diagramSetActive(nextState);
     }
+
     else clearInterval(intervalId);
 
 };
@@ -162,11 +214,45 @@ const initTapeOutput = word => {
 
 const checkInputValue = inputValue => {
     if (inputValue.length != 0) {
-        document.getElementById("launchDiagram").removeAttribute("disabled");
-    } else document.getElementById("launchDiagram").setAttribute("disabled", "");
+        document.getElementById("launchButton").removeAttribute("disabled");
+    } else document.getElementById("launchButton").setAttribute("disabled", "");
+};
+
+const activateInputControl = () => {
+    document.querySelector("#formControl1").classList.add("shadow", "border", "border-primary", "bg-light");
+};
+
+const deactivateInputControl = () => {
+    document.querySelector("#formControl1").classList.remove("shadow", "border", "border-primary", "bg-light");
+    const nodes = document.querySelectorAll(".input-control");
+    for (const node of nodes) {
+        node.disabled = true;
+    }
+};
+
+const enableDisableInputCntrol = () => {
+    const nodes = document.querySelectorAll(".input-control");
+    for (const node of nodes) {
+        node.disabled = !node.disabled;
+    }
+};
+
+const activateLaunchButton = () => {
+    const launchButton = document.querySelector("#launchButton");
+    launchButton.classList.remove("btn-light");
+    launchButton.classList.add("btn", "btn-primary");
+};
+
+const enableOutputControl = () => {
+    // document.querySelector("#formControl1").classList.remove("shadow", "border", "border-primary", "bg-light");
+    const nodes = document.querySelectorAll(".output-control");
+    for (const node of nodes) {
+        node.disabled = false;
+    }
 };
 
 
+// refactor both methods
 const enableAllButtons = () => {
     const disabledButtons = document.querySelectorAll("button");
     for (const button of disabledButtons) {
@@ -188,10 +274,19 @@ const disableEnable = element => {
 document.addEventListener("DOMContentLoaded", function (event) {
     console.log("DOM fully loaded and parsed");
 
-    const launchButton = document.getElementById("launchDiagram");
+    // init tape output
+    initTapeOutput(Array.from("Beispielwort".toUpperCase()));
 
+    // init input control
+    // activateInputControl();
+
+    const launchButton = document.querySelector("#launchButton");
     launchButton.addEventListener("click", async function () {
-
+        // enableDisableInputCntrol();
+        deactivateInputControl();
+        enableOutputControl();
+        tapeWrapResetColor();
+        activateStageElements();
 
         if (typeof diagram !== "undefined") {
             diagram.div = null;
@@ -204,8 +299,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
             accState = response["states"].length;
             transitions = await transitionList(response["log"]);
             counter = 0;
-            console.log(response)
-            console.log(transitions)
+            // console.log(response);
+            // console.log(transitions);
 
             // init diagram
             diagram = initDiagram(nodeData(response["states"]), linkData(response["states"]));
@@ -213,8 +308,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
             // init tape
             initTapeOutput(response["word"]);
         }
-        // disableEnable(this);
-
     });
 
     document.getElementById("inlineRadio1").addEventListener("input", async () => {
