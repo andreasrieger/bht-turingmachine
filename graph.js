@@ -2,7 +2,8 @@
  * Method to generate an interactive GoJS diagram automatically
  * 
  * @param {*} graphs 
- * @param {*} links 
+ * @param {*} links
+ * @returns reference to diagram
  */
 function initDiagram(graphs, links) {
 
@@ -50,5 +51,5 @@ function initDiagram(graphs, links) {
     );
 
     myDiagram.model.isReadOnly = true;
-    // return myDiagram;
+    return myDiagram;
 }

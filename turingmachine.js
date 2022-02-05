@@ -164,7 +164,7 @@ class Turingmachine {
 
             // leaving the loop while reading unknown char from tape 
             else {
-                console.log(`unknown char ${read} at head pos. ${head} in state ${curState}`);
+                // console.log(`unknown char ${read} at head pos. ${head} in state ${curState}`);
                 this.logResult(curState, head, read, read, 'N', nextState);
             }
         }

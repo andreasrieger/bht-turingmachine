@@ -388,7 +388,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     // starting animation
     document.getElementById("startButton").addEventListener("click", async function () {
-        console.log(this.id)
         intervalId = setInterval(stageOutputNextFrame, interval);
     });
 
