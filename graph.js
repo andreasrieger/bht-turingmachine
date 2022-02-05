@@ -5,7 +5,7 @@ function initDiagram(graphs, links) {
             { "undoManager.isEnabled": true }, // enable undo & redo
         );
 
-    myDiagram.layout = new go.LayeredDigraphLayout({ columnSpacing: 50, layerSpacing: 40 });
+    myDiagram.layout = new go.LayeredDigraphLayout({ columnSpacing: 60, layerSpacing: 35 });
 
     // define a simple Node template
     myDiagram.nodeTemplate =

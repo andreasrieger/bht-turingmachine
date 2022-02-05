@@ -97,11 +97,19 @@ const linkData = (states) => {
 
 const transitionList = async (log) => {
     const arr = [];
-    arr.push({ from: log[0]["curState"], to: log[0]["curState"], key: `${log[0]["curState"]}${log[0]["curState"]}`, head: log[0]["head"], write: log[0]["read"] });
+    // arr.push({ from: log[0]["curState"], to: log[0]["curState"], key: `${log[0]["curState"]}${log[0]["curState"]}`, head: log[0]["head"], write: log[0]["read"] });
 
-    for (const transition of log) {
-        const key = `${transition["curState"]}${transition["nextState"]}`;
-        arr.push({ from: transition["curState"], to: transition["nextState"], key: key, head: transition["head"], write: transition["write"] });
+    for (const row of log) {
+        const
+            from = row["curState"],
+            to = row["nextState"],
+            key = `${row["curState"]}${row["nextState"]}`,
+            head = row["head"],
+            read = row["read"],
+            write = row["write"],
+            move = row["move"]
+            ;
+        arr.push({ from: from, to: to, key: key, head: head, read: read, write: write, move: move });
     }
     return arr;
 };
