@@ -16,18 +16,20 @@
 
 <body>
     <nav class="navbar navbar-expand-lg sticky-top navbar-light bg-light">
-        <div class="container-fluid">
+        <div class="container">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 nav-justified">
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="documentation.html">Dokumentation</a>
                     </li>
             </div>
+                <button type="button" class="btn btn-outline-primary text-nowrap" id="resetButton" disabled>Ausgabe zurücksetzen
+                </button>
         </div>
     </nav>
 
@@ -35,7 +37,8 @@
         <div class="row justify-content-center my-4">
             <div class="col-10 text-center">
                 <h1 class="h2">Turingmaschine (TM)</h1>
-                <p class="lead">Simulation und Visualisierung einer Turingmaschine zur Entscheidung über die sog. Embedded Reber
+                <p class="lead">Simulation und Visualisierung einer Turingmaschine zur Entscheidung über die sog.
+                    Embedded Reber
                     Grammar (ERG).</p>
             </div>
         </div>
@@ -46,19 +49,20 @@
                 <h2 class="h3 text-center">Eingabe und Ausgabe</h2>
                 <div class="row align-items-center pt-3">
                     <div class="col-auto">
-                        <input type="text" class="form-control input-control shadow border border-primary bg-light" id="formControl1" placeholder="Zeichenfolge eingeben..."
-                            pattern="[BbEePpSsTtVvXx#]{5,255}" required>
+                        <input type="text" class="form-control input-control shadow border border-primary bg-light"
+                            id="formControl1" placeholder="Zeichenfolge eingeben..." pattern="[BbEePpSsTtVvXx#]{5,255}"
+                            required>
                     </div>
                     <div class="col-auto d-flex flex-nowrap align-items-center">
                         <span>oder zufällig erzeugen:&nbsp;&nbsp;</span>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input input-control" type="radio" name="inlineRadioOptions" id="inlineRadio1"
-                                value="true">
+                            <input class="form-check-input input-control" type="radio" name="inlineRadioOptions"
+                                id="inlineRadio1" value="true">
                             <label class="form-check-label" for="inlineRadio1">richtig</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input input-control" type="radio" name="inlineRadioOptions" id="inlineRadio2"
-                                value="false">
+                            <input class="form-check-input input-control" type="radio" name="inlineRadioOptions"
+                                id="inlineRadio2" value="false">
                             <label class="form-check-label" for="inlineRadio2">falsch</label>
                         </div>
                     </div>
@@ -74,19 +78,26 @@
                 <h2 class="h3 text-center">Ausgabesteuerung</h2>
                 <div class="row align-items-center pt-3">
                     <div class="col-auto">
-                        <div class="btn-group" role="group">
-                            <button id="stopButton" type="button" class="btn btn-outline-danger output-control" disabled>Stop</button>
-                            <button id="nextButton" type="button" class="btn btn-outline-success output-control" disabled>Vor</button>
-                            <button id="startButton" type="button" class="btn btn-outline-success output-control" disabled>Start</button>
+                        <div class="btn-group" id="outputControlGroup" role="group">
+                            <button id="stopButton" type="button" class="btn btn-outline-danger output-control"
+                                disabled>Stop</button>
+                            <button id="nextButton" type="button" class="btn btn-outline-success output-control"
+                                disabled>Vor</button>
+                            <button id="startButton" type="button" class="btn btn-outline-success output-control"
+                                disabled>Start</button>
                         </div>
                     </div>
                     <div class="col-auto">
-                        <input type="range" class="form-range output-control" min=".5" max="5" step=".5" value=".5"
+                        <span>schnell</span>
+                    </div>
+                    <div class="col-auto">
+                        <input type="range" class="form-range output-control" min="1" max="10" step="1" value="1"
                             id="animationInterval" data-bs-toggle="tooltip" data-bs-placement="top"
                             title="Geschwindigkeit einstellen" disabled>
                     </div>
                     <div class="col-auto">
-                        <label for="animationInterval" id="animationIntervalOutput">0,5 Sekunde(n)</label>
+                        <span>langsam</span>
+                        <!-- <label for="animationInterval" id="animationIntervalOutput">0,5 Sekunde(n)</label> -->
                     </div>
                 </div>
             </div>
@@ -135,16 +146,18 @@
                             <p id="moveOutput" class="card-text fs-5 fw-bold font-monospace">R</p>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
         <!-- end tape output -->
-        <hr class="hr">
         <!-- start diagram output -->
-        <div class="row justify-content-center m-auto">
+        <div class="row justify-content-center mt-2 mb-5">
             <div class="col">
-                <div id="myDiagramDiv" class="mx-auto bg-body stage-element" style="width:1200px; height:400px;"></div>
+                <div class="card stage-element" id="diagramOutput">
+                    <div class="card-body text-center">
+                        <div id="myDiagramDiv" class="bg-body" style="width:1200px; height:450px;"></div>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- end diagram output -->

@@ -11,7 +11,7 @@
 
 <body>
     <nav class="navbar navbar-expand-lg sticky-top navbar-light bg-light">
-        <div class="container-fluid">
+        <div class="container">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -30,22 +30,321 @@
             <div class="col-2"></div>
             <div class="col-8 mb-3">
                 <h1 class="h3">Realisierung einer Turingmaschine (TM)</h1>
-                <p>Autor: Andreas Rieger<br />Datum: 23.01.2022</p>
+                <p>Autor: Andreas Rieger<br />Datum: 05.02.2022</p>
                 <h2 class="h4">Aufgabenstellung</h2>
                 <p>Simulation und Visualisierung einer Turingmaschine zur Entscheidung über die <a
-                        href="https://willamette.edu/~gorr/classes/cs449/reber.html#top">Embedded Reber Grammar (ERG)</a>.</p>
+                        href="https://willamette.edu/~gorr/classes/cs449/reber.html#top">Embedded Reber Grammar
+                        (ERG)</a>.</p>
                 <h2 class="h4">Technische Dokumentation</h2>
-                <p>Die Anwendung basiert auf HTML, CSS, Javascript und SVG. Diese wurden
-                    ohne Verwendung von Frameworks implementiert.</p>
+                <p>Die Anwendung basiert auf HTML, CSS und Javascript. </p>
+                <p>Zur Darstellung der Status als interaktives Diagramm wurde <a
+                        href="https://gojs.net/latest/index.html">GoJS</a> implementiert. GoJS ermöglicht die
+                    automatische Erstellung von interaktiven Graphen durch die Nutzung von Log-Daten aus dem
+                    Programmdurchlauf.</p>
                 <p>Zur Visualisierung der Oberfl&auml;che wurde au&szlig;erdem das Framework
-                    <a href="https://getbootstrap.com/">Bootstrap v5.1</a> verwendet. Bootstrap liefert eine
+                    <a href="https://getbootstrap.com/">Bootstrap</a> verwendet. Bootstrap liefert eine
                     einheitliche, gut strukturierte und responsive
-                    Benutzeroberfl&auml;che, die sich verschiedenen Endger&auml;ten anpassen l&auml;sst. Außerdem hält
+                    Benutzeroberfl&auml;che, die sich an verschiedene Endger&auml;te anpassen l&auml;sst. Außerdem hält
                     das Framework viele vordefinierte und ansprechend gestaltete Komponenten zur Interaktion bereit.
                 </p>
                 <h2 class="h4">Fachliche Dokumentation</h2>
-                <p></p>
-                <p></p>
+                <p>Das Eingabewort kann manuell oder mit Hilfe eines Zufallsgenerators erstellt werden, wobei richtige
+                    und potenziell falsche Buchstabenkombinationen ausgegeben werden.</p>
+                <pre>const randomSequence = async () => {
+                        // To do: set min and max
+                        const
+                            n = sigma.length,
+                            arr = [],
+                            x = await randomInt(5, 10);
+                    
+                        for (let i = 0; i < x; i++) {
+                            arr.push(sigma[(0 + Math.floor(Math.random() * n)) % n]);
+                        }
+                        return arr;
+                    };</pre>
+                <p>Anschließend wird die Überprüfung
+                    des Eingabewortes und die Ausgabe des Ergebnisses initialisiert.</p>
+                <pre>if (inputValue.length != 0) {
+                    response = new Turingmachine(inputValue.toUpperCase());
+                    accState = response["states"].length;
+                    transitions = await transitionList(response["log"]);
+                    counter = 0;
+        
+                    // init diagram
+                    diagram = initDiagram(nodeData(response["states"]), linkData(response["states"]));
+        
+                    // init tape
+                    initTapeOutput(response["word"]);
+                }</pre>
+                <p>Die Turingmaschine wird als JavaScript-Klasse implementiert. Das übergebene Wort wird "auf das Band
+                    geschrieben".</p>
+                <pre>class Turingmachine {
+                    constructor(word) {
+                        
+                        // creating array from word
+                        const tape = Array.from(word.trim());
+                
+                        // adding a blank to mark the end of word
+                        tape.push(blank);
+                
+                        const firstChar = (element) => element != blank;
+                        this.word = tape.slice(tape.findIndex(firstChar))
+                        this.states = states;
+                        this.accepted = false;
+                        this.blank = blank;
+                        this.log = [];
+                        ...
+                    }
+                }
+                    </pre>
+                <p>Die Konstruktor-Methode (rekursive Funktion) durchläuft die Eingabe auf dem Band und testet diese
+                    gegen die Maschinen-Konfiguration.</p>
+                <pre>const operations = () => {
+
+                        // making configuration details 
+                        // shorter and more readable
+                        const read = tape[head];
+            
+                        // running through the configuration without errors 
+                        // while reading only valid chars from tape
+                        if (typeof states[curState][read] !== "undefined") {
+            
+                            // making configuration details shorter and more readable
+                            const write = states[curState][read][0];
+                            const move = states[curState][read][1];
+                            nextState = states[curState][read][2];
+            
+                            // Ignoring initial 'blanks' and
+                            // moving the head to the first char without logging
+                            if (curState == 0 && tape[head] == blank) {
+                                head++;
+                                operations();
+                            }
+            
+                            // moving head to the right
+                            else if (move == 'R') {
+                                this.logResult(curState, head, read, write, move, nextState);
+                                curState = nextState;
+                                tape[head] = write;
+                                head++;
+                                operations();
+                            }
+            
+                            // moving head to the left
+                            else if (move == 'L') {
+                                this.logResult(curState, head, read, write, move, nextState);
+                                curState = nextState;
+                                tape[head] = write;
+                                head--;
+                                operations();
+                            }
+            
+                            // reaching end of tape, succeeding
+                            else {
+                                this.logResult(curState, head, read, write, move, nextState);
+                                this.accepted = true;
+                            }
+                        }
+            
+                        // leaving the loop while reading unknown char from tape 
+                        else {
+                            console.log(`unknown char ${read} at head pos. ${head} in state ${curState}`);
+                            this.logResult(curState, head, read, read, 'N', nextState);
+                        }
+                    }
+                    operations(); // starting program routine
+                }</pre>
+                <p>Die Maschinenkonfiguration als Array aus Objekten:</p>
+                <pre>const states = [
+                    // curState 0
+                    {
+                        [blank]: [blank, 'R', 0],
+                        'B': [blank, 'R', 1]
+                    },
+                    // curState 1
+                    {
+                        'T': ['T', 'R', 2],
+                        'P': ['P', 'R', 2]
+                    },
+                    // curState 2
+                    {
+                        'B': [blank, 'R', 3]
+                    },
+                    // curState 3
+                    {
+                        'T': [blank, 'R', 4],
+                        'P': [blank, 'R', 6]
+                    },
+                    // curState 4
+                    {
+                        'S': [blank, 'R', 4],
+                        'X': [blank, 'R', 5]
+                    },
+                    // curState 5
+                    {
+                        'X': [blank, 'R', 6],
+                        'S': [blank, 'R', 8]
+                    },
+                    // curState 6
+                    {
+                        'T': [blank, 'R', 6],
+                        'V': [blank, 'R', 7]
+                    },
+                    // curState 7
+                    {
+                        'P': [blank, 'R', 5],
+                        'V': [blank, 'R', 8]
+                    },
+                    // curState 8
+                    {
+                        'E': [blank, 'R', 9]
+                    },
+                    // curState 9
+                    {
+                        'T': [blank, 'L', 10],
+                        'P': [blank, 'L', 11]
+                    },
+                    // curState 10
+                    {
+                        [blank]: [blank, 'L', 10],
+                        'T': [blank, 'R', 12]
+                    },
+                    // curState 11
+                    {
+                        [blank]: [blank, 'L', 11],
+                        'P': [blank, 'R', 12]
+                    },
+                    // curState 12
+                    {
+                        [blank]: [blank, 'R', 12],
+                        'E': [blank, 'R', 13]
+                    },
+                    // curState 13
+                    {
+                        [blank]: [blank, 'N', 13]
+                    }
+                ];</pre>
+                <p>Aus den Logs der Maschine werden die Daten für die Erstellung der Graphen generiert:</p>
+                <p>Diagramm-Nodes:</p>
+                <pre>const nodeData = (states) => {
+                    const arr = [];
+                    const graphIds = [];
+                    let graphId = null;
+                    for (let i = 0, l = states.length; i < l; i++) {
+                        if (i != graphId && !graphIds.includes(i)) {
+                            if (i == 0) {
+                                arr.push({ key: i, color: "green" });
+                                graphIds.push(i);
+                            }
+                            if (!graphIds.includes(i)) {
+                                arr.push({ key: i, color: "grey" });
+                                graphIds.push(i);
+                            }
+                            graphId = i;
+                        }
+                    }
+                    return arr;
+                };</pre>
+                <p>Die Links zwischen den Nodes:</p>
+                <pre>const linkData = (states) => {
+                    const arr = [];
+                    for (let i = 0, l = states.length; i < l; i++) {
+                        for (const key of Object.entries(states[i])) {
+                            const label = `[${key[0]}, ${key[1][0]}, ${key[1][1]}]`;
+                            const linkKey = i.toString() + key[1][2].toString();
+                            arr.push({ from: i, to: key[1][2], key: linkKey, label: label });
+                        }
+                    }
+                    return arr;
+                };</pre>
+                <p>Für die Visualisierung des Maschinenablaufs und der Zustandsgraphen wird ein Array aus Objekten
+                    erstellt.</p>
+                <pre>const transitionList = async (log) => {
+                        const arr = [];
+                        for (const row of log) {
+                            const
+                                from = row["curState"],
+                                to = row["nextState"],
+                                key = `${row["curState"]}${row["nextState"]}`,
+                                head = row["head"],
+                                read = row["read"],
+                                write = row["write"],
+                                move = row["move"]
+                                ;
+                            arr.push({ from: from, to: to, key: key, head: head, read: read, write: write, move: move });
+                        }
+                        return arr;
+                    };</pre>
+                <p>Übergabe der Konfigurationsdaten an das Zustandsdiagramm und Initialisierung des Diagramms:</p>
+                <pre>function initDiagram(graphs, links) {
+
+                        const myDiagram =
+                            new go.Diagram("myDiagramDiv",  // create a Diagram for a HTML Div element
+                                { "undoManager.isEnabled": true }, // enable undo & redo
+                            );
+                    
+                        // using the LayeredDigraphLayout layout
+                        myDiagram.layout = new go.LayeredDigraphLayout({ columnSpacing: 60, layerSpacing: 35 });
+                    
+                        // define a simple Node template
+                        myDiagram.nodeTemplate =
+                            new go.Node("Auto")  // the Shape will automatically surround the TextBlock
+                                .add(  // add a Shape and a TextBlock to this "Auto" Panel
+                                    new go.Shape("Circle",
+                                        { strokeWidth: 0, fill: "white" })  // no border; default fill is white
+                                        // Shape.fill is bound to Node.data.color
+                                        .bind("fill", "color"),
+                                    new go.TextBlock({ margin: 5, stroke: "#333" })  // some room around the text
+                                        // TextBlock.text is bound to Node.data.key
+                                        .bind("text", "key"));
+                    
+                        // but use the default Link template, by not setting Diagram.linkTemplate
+                        myDiagram.linkTemplate =
+                            new go.Link({ curve: go.Link.Bezier, curviness: 20 })
+                                .add(
+                                    new go.Shape(),
+                                    new go.Shape({ toArrow: "Standard" }),
+                                    new go.Panel("Auto", { segmentOffset: new go.Point(0, -25) })
+                                        .add(
+                                            new go.Shape("RoundedRectangle", { fill: "white" }),
+                                            new go.TextBlock({ background: "white", margin: 2 }).bind("text", "label")
+                                        )
+                                )
+                            ;
+                    
+                        // enabling the key property for graph links 
+                        myDiagram.linkKeyProperty = "key";
+                    
+                        // create the model data that will be represented by Nodes and Links
+                        myDiagram.model = new go.GraphLinksModel(
+                            graphs,
+                            links
+                        );
+                    
+                        myDiagram.model.isReadOnly = true;
+                        // return myDiagram;
+                    }</pre>
+                <p>Übergabe der Konfigurationsdaten zur Darstellung des Eingabebands an das Frontend:</p>
+                <pre>const initTapeOutput = word => {
+                        const tapeWrap = document.getElementById("tapeOutput");
+                        tapeWrap.innerHTML = "";
+                        const output = document.createElement("p");
+                        for (let i = 0, l = word.length; i < l; i++) {
+                            const textWrap = document.createElement("span");
+                            textWrap.setAttribute("id", "th" + i);
+                            if (i == 0) {
+                                textWrap.setAttribute("class", "bg-secondary text-white");
+                            } else textWrap.setAttribute("class", "bg-light text-dark");
+                            textWrap.classList.add("fs-1", "fw-bold", "font-monospace", "tape-element");
+                            const text = document.createTextNode(word[i]);
+                            textWrap.appendChild(text);
+                            output.appendChild(textWrap);
+                        }
+                        tapeWrap.appendChild(output);
+                    };</pre>
+                <p>Nach dem Laden des Graphen-Diagramms und der Band-Darstellung kann die Simulation gestartet werden.
+                    Die Nutzer:innen haben dabei die Wahl zwischen der manuellen Steuerung in Einzelschritten oder der
+                    automatischen Animation mit einstellbarer Geschwindigkeit.</p>
             </div>
             <div class="col-2"></div>
         </div>

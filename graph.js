@@ -1,3 +1,9 @@
+/**
+ * Method to generate an interactive GoJS diagram automatically
+ * 
+ * @param {*} graphs 
+ * @param {*} links 
+ */
 function initDiagram(graphs, links) {
 
     const myDiagram =
@@ -5,6 +11,7 @@ function initDiagram(graphs, links) {
             { "undoManager.isEnabled": true }, // enable undo & redo
         );
 
+    // using the LayeredDigraphLayout layout
     myDiagram.layout = new go.LayeredDigraphLayout({ columnSpacing: 60, layerSpacing: 35 });
 
     // define a simple Node template
@@ -33,8 +40,7 @@ function initDiagram(graphs, links) {
             )
         ;
 
-
-
+    // enabling the key property for graph links 
     myDiagram.linkKeyProperty = "key";
 
     // create the model data that will be represented by Nodes and Links
@@ -44,8 +50,5 @@ function initDiagram(graphs, links) {
     );
 
     myDiagram.model.isReadOnly = true;
-
-
-    return myDiagram;
+    // return myDiagram;
 }
-

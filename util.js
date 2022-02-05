@@ -3,7 +3,7 @@
 *
 * @param {*} min
 * @param {*} max
-* @returns
+* @returns number
 */
 const randomInt = async (min, max) => {
     return (
@@ -18,7 +18,7 @@ const randomInt = async (min, max) => {
  * random number of words (chars) from sigma.
  *
  * @param {*} abc
- * @returns
+ * @returns array of characters
  */
 const randomSequence = async () => {
     // To do: set min and max
@@ -31,6 +31,26 @@ const randomSequence = async () => {
         arr.push(sigma[(0 + Math.floor(Math.random() * n)) % n]);
     }
     return arr;
+};
+
+
+/**
+ * Method to get a proven sequence of chars to be send to the Turingmachine class
+ * @returns array of characters
+ */
+const getProofSequence = async () => {
+    return proven[await randomInt(0, proven.length - 1)].join('');
+};
+
+
+/**
+ * Method to get a random and potentially invalid sequence of chars to 
+ * be send to the Turingmachine class
+ * 
+ * @returns array of characters
+ */
+const getRandomSequence = async () => {
+    return (await randomSequence()).join('');
 };
 
 
@@ -50,22 +70,16 @@ const tm = async (proof) => {
 };
 
 
-const getProofSequence = async () => {
-    return proven[await randomInt(0, proven.length - 1)].join('');
-};
-
-const getRandomSequence = async () => {
-    return (await randomSequence()).join('');
-};
-
-
+/**
+ * Method to generate an array with data objects (nodes) for diagram output
+ * @param {*} states 
+ * @returns array of objects
+ */
 const nodeData = (states) => {
     const arr = [];
     const graphIds = [];
     let graphId = null;
-
     for (let i = 0, l = states.length; i < l; i++) {
-
         if (i != graphId && !graphIds.includes(i)) {
             if (i == 0) {
                 arr.push({ key: i, color: "green" });
@@ -82,6 +96,11 @@ const nodeData = (states) => {
 };
 
 
+/**
+ * Method to generate an array with data objects (links between nodes) for diagram output
+ * @param {*} states 
+ * @returns array of objects
+ */
 const linkData = (states) => {
     const arr = [];
     for (let i = 0, l = states.length; i < l; i++) {
@@ -95,10 +114,13 @@ const linkData = (states) => {
 };
 
 
+/**
+ * Method to generate an array with data objects for animation output control
+ * @param {*} log 
+ * @returns array of objects
+ */
 const transitionList = async (log) => {
     const arr = [];
-    // arr.push({ from: log[0]["curState"], to: log[0]["curState"], key: `${log[0]["curState"]}${log[0]["curState"]}`, head: log[0]["head"], write: log[0]["read"] });
-
     for (const row of log) {
         const
             from = row["curState"],

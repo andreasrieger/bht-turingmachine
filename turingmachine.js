@@ -3,8 +3,10 @@
  *
  * @Author: Andreas Rieger, s82456@bht-berlin.de
  * Date: 2022-01-23, updated: 2022-02-04
- * /
+ */
 
+
+const blank = '_'; // using the underscores ('_') instead of blanks / spaces (' ') for testing purpose
 
 /**
  * Machine configuration
@@ -13,9 +15,6 @@
  * Every transition consists of key (tape read) and 3 statements: write, moving direction and new curState.
  *
  */
-
-const blank = '_'; // using the underscores ('_') instead of blanks / spaces (' ') for testing purpose
-
 const states = [
     // curState 0
     {
@@ -86,13 +85,14 @@ const states = [
     }
 ];
 
+
 /**
  * This class is defining a turing machine.
  * The class' constructor is expecting a word to work with.
  */
 class Turingmachine {
     constructor(word) {
-
+        
         // creating array from word
         const tape = Array.from(word.trim());
 
@@ -117,7 +117,6 @@ class Turingmachine {
          */
         const operations = () => {
 
-
             // making configuration details 
             // shorter and more readable
             const read = tape[head];
@@ -131,7 +130,7 @@ class Turingmachine {
                 const move = states[curState][read][1];
                 nextState = states[curState][read][2];
 
-                // Ignoring initial 'blanks' (#) and
+                // Ignoring initial 'blanks' and
                 // moving the head to the first char without logging
                 if (curState == 0 && tape[head] == blank) {
                     head++;
@@ -161,7 +160,6 @@ class Turingmachine {
                     this.logResult(curState, head, read, write, move, nextState);
                     this.accepted = true;
                 }
-
             }
 
             // leaving the loop while reading unknown char from tape 
@@ -169,13 +167,7 @@ class Turingmachine {
                 console.log(`unknown char ${read} at head pos. ${head} in state ${curState}`);
                 this.logResult(curState, head, read, read, 'N', nextState);
             }
-
-
-
-
-
         }
-
         operations(); // starting program routine
     }
 
