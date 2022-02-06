@@ -38,9 +38,9 @@
                 <h2 class="h4">Technische Dokumentation</h2>
                 <p>Die Anwendung basiert auf HTML, CSS und Javascript. </p>
                 <p>Zur Darstellung der Status als interaktives Diagramm wurde <a
-                        href="https://gojs.net/latest/index.html">GoJS</a> implementiert. GoJS ermöglicht die
-                    automatische Erstellung von interaktiven Graphen durch die Nutzung von Log-Daten aus dem
-                    Programmdurchlauf.</p>
+                        href="https://gojs.net/latest/index.html">GoJS</a> implementiert. GoJS ermöglicht die schnelle
+                    und automatische Erstellung von interaktiven Graphen durch die Nutzung von Log-Daten aus dem
+                    Programmdurchlauf. Dieses Framework ist kompatibel mit den anderen. Es stehen verschiedene Layouts und Templates zur Verfügung.</p>
                 <p>Zur Visualisierung der Oberfl&auml;che wurde au&szlig;erdem das Framework
                     <a href="https://getbootstrap.com/">Bootstrap</a> verwendet. Bootstrap liefert eine
                     einheitliche, gut strukturierte und responsive
@@ -62,8 +62,8 @@
                         }
                         return arr;
                     };</pre>
-                <p>Anschließend wird die Überprüfung
-                    des Eingabewortes und die Ausgabe des Ergebnisses initialisiert.</p>
+                <h3 class="h5">Anschließend wird die Überprüfung
+                    des Eingabewortes und die Ausgabe des Ergebnisses initialisiert.</h3>
                 <pre>if (inputValue.length != 0) {
                     response = new Turingmachine(inputValue.toUpperCase());
                     accState = response["states"].length;
@@ -76,8 +76,9 @@
                     // init tape
                     initTapeOutput(response["word"]);
                 }</pre>
-                <p>Die Turingmaschine wird als JavaScript-Klasse implementiert. Das übergebene Wort wird "auf das Band
-                    geschrieben".</p>
+                <h3 class="h5">
+                    Die Turingmaschine wird als JavaScript-Klasse implementiert. Das übergebene Wort wird "auf das Band
+                    geschrieben".</h3>
                 <pre>class Turingmachine {
                     constructor(word) {
                         
@@ -97,8 +98,9 @@
                     }
                 }
                     </pre>
-                <p>Die Konstruktor-Methode (rekursive Funktion) durchläuft die Eingabe auf dem Band und testet diese
-                    gegen die Maschinen-Konfiguration.</p>
+                <h3 class="h5">Die Konstruktor-Methode (rekursive Funktion) durchläuft die Eingabe auf dem Band und
+                    testet diese
+                    gegen die Maschinen-Konfiguration.</h3>
                 <pre>const operations = () => {
 
                         // making configuration details 
@@ -154,7 +156,7 @@
                     }
                     operations(); // starting program routine
                 }</pre>
-                <p>Die Maschinenkonfiguration als Array aus Objekten:</p>
+                <p class="fw-bold">Die Maschinenkonfiguration als Array aus Objekten:</p>
                 <pre>const states = [
                     // curState 0
                     {
@@ -224,8 +226,8 @@
                         [blank]: [blank, 'N', 13]
                     }
                 ];</pre>
-                <p>Aus den Logs der Maschine werden die Daten für die Erstellung der Graphen generiert:</p>
-                <p>Diagramm-Nodes:</p>
+                <h3 class="h5">Aus den Logs der Maschine werden die Daten für die Erstellung der Graphen generiert</h3>
+                <p class="fw-bold">Diagramm-Nodes:</p>
                 <pre>const nodeData = (states) => {
                     const arr = [];
                     const graphIds = [];
@@ -245,7 +247,7 @@
                     }
                     return arr;
                 };</pre>
-                <p>Die Links zwischen den Nodes:</p>
+                <p class="fw-bold">Die Links zwischen den Nodes:</p>
                 <pre>const linkData = (states) => {
                     const arr = [];
                     for (let i = 0, l = states.length; i < l; i++) {
@@ -257,8 +259,9 @@
                     }
                     return arr;
                 };</pre>
-                <p>Für die Visualisierung des Maschinenablaufs und der Zustandsgraphen wird ein Array aus Objekten
-                    erstellt.</p>
+                <h3 class="h5">Für die Visualisierung des Maschinenablaufs und der Zustandsgraphen wird ein Array aus
+                    Objekten
+                    erstellt.</h3>
                 <pre>const transitionList = async (log) => {
                         const arr = [];
                         for (const row of log) {
@@ -275,7 +278,8 @@
                         }
                         return arr;
                     };</pre>
-                <p>Übergabe der Konfigurationsdaten an das Zustandsdiagramm und Initialisierung des Diagramms:</p>
+                <h3 class="h5">Übergabe der Konfigurationsdaten an das Zustandsdiagramm und Initialisierung des
+                    Diagramms:</h3>
                 <pre>function initDiagram(graphs, links) {
 
                         const myDiagram =
@@ -324,7 +328,7 @@
                         myDiagram.model.isReadOnly = true;
                         return myDiagram;
                     }</pre>
-                <p>Übergabe der Konfigurationsdaten zur Darstellung des Eingabebands an das Frontend:</p>
+                <h3 class="h5">Übergabe der Konfigurationsdaten zur Darstellung des Eingabebands an das Frontend:</h3>
                 <pre>const initTapeOutput = word => {
                         const tapeWrap = document.getElementById("tapeOutput");
                         tapeWrap.innerHTML = "";
@@ -342,9 +346,11 @@
                         }
                         tapeWrap.appendChild(output);
                     };</pre>
-                <p>Nach dem Laden des Graphen-Diagramms und der Band-Darstellung kann die Simulation gestartet werden.
+                <p class="fw-bold">Nach dem Laden des Graphen-Diagramms und der Band-Darstellung kann die Simulation
+                    gestartet werden.
                     Die Nutzer:innen haben dabei die Wahl zwischen der manuellen Steuerung in Einzelschritten oder der
                     automatischen Animation mit einstellbarer Geschwindigkeit.</p>
+                <p class="fw-bold">Viel Spass! <a href="index.html">Und los!</a></p>
             </div>
             <div class="col-2"></div>
         </div>

@@ -7,6 +7,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/4.3.0/introjs.min.css"
+        integrity="sha512-YZO1kAqr8VPYJMaOgT4ZAIP4OeCuAWoZqgdvVYjeqyfieNWrUTzZrrxpgAdDrS7nV3sAVTKdP6MSKhqaMU5Q4g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"
         integrity="sha512-N4kV7GkNv7QR7RX9YF/olywyIgIwNvfEe2nZtfyj73HdjCUkAfOBDbcuJ/cTaN04JKRnw1YG1wnUyNKMsNgg3g=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -27,8 +30,15 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="documentation.html">Dokumentation</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" id="introButton" href="#">Einführung</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" id="helpButton" href="#">Hilfe</a>
+                    </li>
             </div>
-            <button type="button" class="btn btn-outline-primary text-nowrap" id="resetButton" disabled>Ausgabe
+            <button type="button" class="btn btn-outline-primary text-nowrap" id="resetButton" data-step="7" data-position="top" data-title="Zurücksetzen der Anzeige."
+            data-intro="Reaktivierung des Eingabebereichs zur Modifikation oder der Eingabe eines neuen Eingabewortes." data-hint="Eingabebereich aktivieren" data-hintposition="top" disabled>Ausgabe
                 zurücksetzen
             </button>
         </div>
@@ -46,20 +56,22 @@
         <hr class="hr">
         <div class="row align-items-center">
             <!-- start input control -->
-            <div class="col-lg-7">
-                <h2 class="h3 text-center">Eingabe und Ausgabe</h2>
-                <div class="row align-items-center pt-3" >
+            <div class="col-lg-7 introduction-farm" data-step="1" data-position="top"
+                data-title="Hier starten Sie die App."
+                data-intro="In diesem Bereich können Sie eine beliebige Zeichenfolge eingeben oder zufällig erstellen lassen. Anschließend erfolgt deren Prüfung durch die Maschine und die Ausgabe des Ergebnisses.">
+                <h2 class="h3 text-center" data-hint="Der Eingabebereich wird nach dem Rücksetzen der Ausgabe aktiviert." data-hintposition="top">Eingabe und Ausgabe</h2>
+                <div class="row align-items-center pt-3">
                     <div class="col-auto">
                         <input type="text" class="form-control input-control shadow border border-primary bg-light"
                             id="formControl1" placeholder="Zeichenfolge eingeben..." pattern="[BbEePpSsTtVvXx#]{5,255}"
-                            required>
+                            data-hint="Zeichenfolge (z.B.: `BPBPVVEPE`) eingeben" data-hintposition="top" required>
                     </div>
                     <div class="col-auto d-flex flex-nowrap align-items-center">
                         <span>oder zufällig erzeugen:&nbsp;&nbsp;</span>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input input-control" type="radio" name="inlineRadioOptions"
                                 id="inlineRadio1" value="true">
-                            <label class="form-check-label" for="inlineRadio1">richtig</label>
+                            <label class="form-check-label" for="inlineRadio1" data-hint="Zufällige Erzeugung von Wörtern per Klick" data-hintposition="top">richtig</label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input input-control" type="radio" name="inlineRadioOptions"
@@ -75,16 +87,18 @@
             </div>
             <!-- end input control -->
             <!-- start output control -->
-            <div class="col-lg-5">
-                <h2 class="h3 text-center">Ausgabesteuerung</h2>
+            <div class="col-lg-5 introduction-farm" data-step="2" data-position="top"
+                data-title="Steuerung der Animation."
+                data-intro="Hier navigieren Sie durch die einzelnen Schritte der Ausgabeanimation oder lassen diese automatisch ablaufen. Die Geschwindigkeit ist einstellbar. Die Steuerung wird nach der Ausgabe aktiviert.">
+                <h2 class="h3 text-center" data-hint="Die Steuerung wird nach der Ausgabe aktiviert." data-hintposition="top">Ausgabesteuerung</h2>
                 <div class="row align-items-center pt-3">
                     <div class="col-auto">
                         <div class="btn-group" id="outputControlGroup" role="group">
-                            <button id="stopButton" type="button" class="btn btn-outline-danger output-control"
+                            <button id="stopButton" type="button" class="btn btn-outline-danger output-control" data-hint="Animation anhalten" data-hintposition="top"
                                 disabled>Stop</button>
-                            <button id="nextButton" type="button" class="btn btn-outline-success output-control"
+                            <button id="nextButton" type="button" class="btn btn-outline-success output-control" data-hint="Nächster Schritt" data-hintposition="top"
                                 disabled>Vor</button>
-                            <button id="startButton" type="button" class="btn btn-outline-success output-control"
+                            <button id="startButton" type="button" class="btn btn-outline-success output-control" data-hint="Animation starten" data-hintposition="top"
                                 disabled>Start</button>
                         </div>
                     </div>
@@ -96,7 +110,7 @@
                             id="animationInterval" data-bs-toggle="tooltip" data-bs-placement="top"
                             title="Geschwindigkeit einstellen" disabled>
                     </div>
-                    <div class="col-auto">
+                    <div class="col-auto" data-hint="Animationsgeschwindigkeit einstellen" data-hintposition="top">
                         <span>langsam</span>
                         <!-- <label for="animationInterval" id="animationIntervalOutput">0,5 Sekunde(n)</label> -->
                     </div>
@@ -106,68 +120,80 @@
         <!-- end output control -->
         <hr class="hr">
         <!-- start output -->
-        <!-- start tape output -->
-        <div class="row">
-            <div class="col-lg-7">
-                <div class="card stage-element" id="tapeOutputWrap">
-                    <div class="card-body text-center text-uppercase overflow-auto" id="tapeOutput">Beispielwort</div>
-                </div>
-            </div>
-            <div class="col-lg-5">
-                <div class="card-group">
-                    <div class="card stage-element status-output status-output">
-                        <div class="card-header overflow-hidden">
-                            Status
-                        </div>
-                        <div class="card-body overflow-hidden">
-                            <p id="stateOutput" class="card-text fs-5 fw-bold font-monospace">0</p>
-                        </div>
-                    </div>
-                    <div class="card stage-element status-output">
-                        <div class="card-header overflow-hidden">
-                            Lesen
-                        </div>
-                        <div class="card-body overflow-hidden">
-                            <p id="readOutput" class="card-text fs-5 fw-bold font-monospace">B</p>
-                        </div>
-                    </div>
-                    <div class="card stage-element status-output">
-                        <div class="card-header overflow-hidden">
-                            Schreiben
-                        </div>
-                        <div class="card-body overflow-hidden">
-                            <p id="writeOutput" class="card-text fs-5 fw-bold font-monospace">_</p>
-                        </div>
-                    </div>
-                    <div class="card stage-element status-output">
-                        <div class="card-header overflow-hidden">
-                            Richtung
-                        </div>
-                        <div class="card-body overflow-hidden">
-                            <p id="moveOutput" class="card-text fs-5 fw-bold font-monospace">R</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- end tape output -->
-        <!-- start diagram output -->
-        <div class="row justify-content-center mt-2 mb-5">
+        <div class="row mb-5" data-step="3" data-position="top" data-title="Bühne für die Animation."
+            data-intro="Hier wird das Rechenergebnis angezeigt und animiert.">
             <div class="col">
-                <div class="card stage-element" id="diagramOutput">
-                    <div class="card-body text-center">
-                        <div id="myDiagramDiv" class="bg-body" style="width:1200px; height:450px;"></div>
+                <!-- start tape output -->
+                <div class="row">
+                    <div class="col-lg-7">
+                        <div class="card stage-element" id="tapeOutputWrap" data-step="4" data-position="top" data-title="Prüfung des Eingabewortes."
+                        data-intro="Hier wird simuliert, wie sich der Kopf über dem Band bewegt und welche Lese- und Schreiboperationen durchgeführt werden.">
+                            <div class="card-body text-center text-uppercase overflow-auto" id="tapeOutput">Beispielwort
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="card-group" data-step="5" data-position="top" data-title="Statusanzeige."
+                        data-intro="Hier werden der aktuelle Status sowie der Werte für Lesen, Schreiben und die Bewegungsrichtung des Kopfes auf dem Band ausgegeben.">
+                            <div class="card stage-element status-output status-output">
+                                <div class="card-header overflow-hidden">
+                                    Status
+                                </div>
+                                <div class="card-body overflow-hidden">
+                                    <p id="stateOutput" class="card-text fs-5 fw-bold font-monospace">0</p>
+                                </div>
+                            </div>
+                            <div class="card stage-element status-output">
+                                <div class="card-header overflow-hidden">
+                                    Lesen
+                                </div>
+                                <div class="card-body overflow-hidden">
+                                    <p id="readOutput" class="card-text fs-5 fw-bold font-monospace">B</p>
+                                </div>
+                            </div>
+                            <div class="card stage-element status-output">
+                                <div class="card-header overflow-hidden">
+                                    Schreiben
+                                </div>
+                                <div class="card-body overflow-hidden">
+                                    <p id="writeOutput" class="card-text fs-5 fw-bold font-monospace">_</p>
+                                </div>
+                            </div>
+                            <div class="card stage-element status-output">
+                                <div class="card-header overflow-hidden">
+                                    Richtung
+                                </div>
+                                <div class="card-body overflow-hidden">
+                                    <p id="moveOutput" class="card-text fs-5 fw-bold font-monospace">R</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <!-- end tape output -->
+                <!-- start diagram output -->
+                <div class="row justify-content-center mt-2">
+                    <div class="col">
+                        <div class="card stage-element" id="diagramOutput" data-step="6" data-position="top" data-title="Statusanzeige als Graph."
+                        data-intro="Ausgabe des aktuellen Status sowie der Werte für Lesen, Schreiben und die Bewegungsrichtung als Graph.">
+                            <div class="card-body text-center">
+                                <div id="myDiagramDiv" class="bg-body" style="width:1200px; height:450px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end diagram output -->
             </div>
         </div>
-        <!-- end diagram output -->
         <!-- end output -->
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
         crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/4.3.0/intro.min.js"
+        integrity="sha512-WYNEDpX7FCz0ejmdUFl444n+v7gDgDFYmxy2YBx99v15UUk3zU5ZWYFBXFCvWYvd+nv/guwUnXmrecK7Ee0Wtg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="turingmachine.js"></script>
     <script src="graph.js"></script>
     <script src="util.js"></script>

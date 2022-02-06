@@ -409,4 +409,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
     document.querySelector("#introButton").addEventListener("click", () => {
         introJs().start();
     });
+    
+    document.querySelector("#helpButton").addEventListener("click", () => {
+        introJs().addHints()
+    });
 })
