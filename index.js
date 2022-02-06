@@ -405,4 +405,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
         deactivateOuputControl();
         disableEnable(this);
     });
+
+    document.querySelector("#introButton").addEventListener("click", () => {
+        introJs().start();
+    });
 })
